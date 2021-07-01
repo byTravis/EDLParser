@@ -486,8 +486,5 @@ t_btn3.grid(row="0", column="3", padx="5")
 # b_btn2.grid(row="0", column="1", padx="5")
 # b_btn3.grid(row="0", column="2", padx="5")
 
-
-
-
 root.config (menu=menubar)
 root.mainloop()
