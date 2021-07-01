@@ -1,0 +1,5 @@
+TFN.nbtitle,TFN,URL,PROMO
+TFN.nbtitle,{$$Workflow_TFN},{$$Workflow_URL},{$$Workorder_Promo}
+TAG.nbtitle,TFN,URL,PROMO
+TAG.nbtitle,{$$Workflow_TFN},{$$Workflow_URL},{$$Workorder_Promo}
+
