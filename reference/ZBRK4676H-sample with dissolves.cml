@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Composition xmlns="Telestream.Soa.Facility.Playlist">
+  <Source identifier="999999">
+    <File location="{$#Original}" />
+    <Subtitle />
+  </Source>
+  <Source identifier="1">
+    <File location="{$$Source File Path}\lower3.nbtitle" />
+  </Source>
+  <Source identifier="2">
+    <File location="{$$Source File Path}\mid.nbtitle" />
+  </Source>
+  <Source identifier="3">
+    <File location="{$$Source File Path}\mid.nbtitle" />
+  </Source>
+  <Source identifier="4">
+    <File location="{$$Source File Path}\lower3.nbtitle" />
+  </Source>
+  <Source identifier="5">
+    <File location="{$$Source File Path}\lower3.nbtitle" />
+  </Source>
+  <Source identifier="6">
+    <File location="{$$Source File Path}\tag.nbtitle" />
+  </Source>
+  <Sequence layer="1">
+   <Segment>
+    <Video source="999999" />
+   </Segment>
+  </Sequence>
+  <Sequence layer="2">
+   <Segment>
+    <Video source="1 4 5" align="head" adjust="edge" offset="{01:00:07;06@29.97-01:00:00;00@29.97}" filter="mute" >
+       <Tail>
+        <Edit mode="duration" time="{01:00:20;23@29.97-01:00:07;06@29.97}" />
+       </Tail>
+     </Video>
+   </Segment>
+  </Sequence>
+  <Sequence layer="3">
+   <Segment>
+    <Video source="2 3" align="head" adjust="edge" offset="{01:00:20;23@29.97-01:00:00;00@29.97}" filter="mute" >
+       <Tail>
+        <Edit mode="duration" time="{01:00:24;19@29.97-01:00:20;23@29.97}" />
+       </Tail>
+     </Video>
+   </Segment>
+  </Sequence>
+  <Sequence layer="4">
+   <Segment>
+    <Video source="2 3" align="head" adjust="edge" offset="{01:00:24;19@29.97-01:00:00;00@29.97}" filter="mute" >
+       <Tail>
+        <Edit mode="duration" time="{01:00:24;29@29.97-01:00:24;19@29.97}" />
+       </Tail>
+     </Video>
+   </Segment>
+  </Sequence>
+  <Sequence layer="5">
+   <Segment>
+    <Video source="1 4 5" align="head" adjust="edge" offset="{01:00:29;18@29.97-01:00:00;00@29.97}" filter="mute" >
+       <Tail>
+        <Edit mode="duration" time="{01:00:36;03@29.97-01:00:29;18@29.97}" />
+       </Tail>
+     </Video>
+   </Segment>
+  </Sequence>
+  <Sequence layer="6">
+   <Segment>
+    <Video source="1 4 5" align="head" adjust="edge" offset="{01:00:43;24@29.97-01:00:00;00@29.97}" filter="mute" >
+       <Tail>
+        <Edit mode="duration" time="{01:00:57;10@29.97-01:00:43;24@29.97}" />
+       </Tail>
+     </Video>
+   </Segment>
+  </Sequence>
+  <Sequence layer="7">
+   <Segment>
+    <Video source="6" align="head" adjust="edge" offset="{01:00:57;10@29.97-01:00:00;00@29.97}" filter="mute" >
+       <Tail>
+        <Edit mode="duration" time="{01:01:00;02@29.97-01:00:57;10@29.97}" />
+       </Tail>
+     </Video>
+   </Segment>
+  </Sequence>
+</Composition>
