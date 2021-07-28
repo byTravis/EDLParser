@@ -4,10 +4,18 @@ from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import *
 import os
+import webbrowser
 
+
+#credits info
+creditsTitle = "EDL Parcer for Vantage"
+creditsAuthor = "Travis"
+creditsVersion ="v2"
+creditsDate="1/28/2021"
+creditsProjectSource="https://github.com/byTravis/EDLParser/"
+creditsDocumentation = "https://github.com/byTravis/EDLParser/wiki"
 
 #Variable Names for VANTAGE - These are the variables used in Vantage.
-
 vantage_tfn = "Workflow_TFN"
 vantage_url = "Workflow_URL"
 vantage_promo = "Workorder_Promo"
@@ -40,13 +48,13 @@ def new_file(x):
 	csvTitlesList.config(text="")
 	global file_name
 	file_name = ""
-	root.title(f"EDL Parser - for Vantage")
+	root.title(creditsTitle)
 
 #Open File
 def open_file(x):
 	global file_name
 	file_name = ""
-	root.title(f"EDL Parser - for Vantage")	
+	root.title(creditsTitle)	
 	edlTxt.delete("1.0", "end")
 	cmlTxt.delete("1.0", "end")
 	csvTxt.delete("1.0", "end")
@@ -55,7 +63,7 @@ def open_file(x):
 	edl_file = filedialog.askopenfilename(initialdir=cur_dir, title="Open Avid EDL", filetypes=(("Avid EDL", "*.edl"),))
 	
 	file_name = os.path.split(edl_file)[1]
-	root.title(f"EDL Parser - for Vantage  |  {file_name}")
+	root.title(f"{creditsTitle}  |  {file_name}")
 	file_name = file_name.replace(".edl", "")
 	
 	edl_file = open(edl_file, 'r')
@@ -68,9 +76,6 @@ def open_file(x):
 	parse_edl()
 	# generateCsv()
 
-
-
-#NEW CLEANER CODE TO SUPPORT DISSOLVES
 
 
 #Converts frames to Timecode
@@ -157,10 +162,6 @@ def parse_edl():
 		curCount+=1
 	cmlItems.append(["null", "null",  "null",  "null",  "null",  "null"])
 	
-	print("--------------------")
-	for thing in cmlItems:
-		print(thing)
-
 	generateCml(cmlItems)
 
 
@@ -306,11 +307,6 @@ def generateCml(cmlItems):
 	cmlTxt.insert("end",'\n')
 
 
-
-
-
-
-
 	for line in cmlItems:  #creates edits
 		curCount=0
 		editIn=timecodeFormatting(line[3])
@@ -326,8 +322,6 @@ def generateCml(cmlItems):
 			editDissolve="null"
 
 		if line[5] == "null" and line[1] =="D":  #Dissolve In
-			print(line[0], "  This is a dissolve in.  ", line[2], "using:  (", cmlItems[curCount+1][0], ")  ", cmlItems[curCount+1][5])
-
 			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn + '-' + editDissolveOffset + '-' + editHourMark + '}" filter="mute" >\n')		
 			cmlTxt.insert("end",'				<Head>\n')
 			cmlTxt.insert("end",'					<Fade duration="{' + editDissolve + '+' + editDissolveOffset + '}" />\n')
@@ -337,12 +331,8 @@ def generateCml(cmlItems):
 			cmlTxt.insert("end",'				</Tail>\n')
 			cmlTxt.insert("end",'			</Video>\n\n')
 			editSource+=1
-
-
 		
 		elif line[5] != "null" and line[1] =="D":  #Dissolve Out
-			print(line[0], "  This is a dissolve out.  ", line[2], "using:  (", line[0], ")  ", line[5])
-
 			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn +  '-' + editHourMark + '}" filter="mute" >\n')
 			cmlTxt.insert("end",'				<Tail>\n')
 			cmlTxt.insert("end",'					<Fade duration="{' + editDissolve + '+' + editDissolveOffset + '}" />\n')
@@ -350,11 +340,8 @@ def generateCml(cmlItems):
 			cmlTxt.insert("end",'				</Tail>\n')
 			cmlTxt.insert("end",'			</Video>\n\n')
 			editSource+=1
-
-		
+	
 		elif line[5] != "null" and line[1] =="C":  #Cuts
-			print(line[0], "  This is Cuts Only.  ", line[2], "using:  (", line[0], ")  ", line[5])
-
 			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn + '-' + editHourMark + '}" filter="mute" >\n')
 			cmlTxt.insert("end",'				<Tail>\n')
 			cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '-' + editIn +   '}" />\n')
@@ -376,7 +363,6 @@ def generateCml(cmlItems):
 	</Sequence>
 
 </Composition>""")  #footer
-
 
 	generateCsv()
 
@@ -445,9 +431,13 @@ def save_success():
 	messagebox.showinfo("Success!", "Your CML and CSV files have been saved.")
 
 
+def aboutPopup():
+	messagebox.showinfo("About " + creditsTitle, creditsTitle + "\nCreated by " + creditsAuthor +  "\nVersion: " + creditsVersion + "\nDate: " + creditsDate + "\nGitHub: " + creditsProjectSource)
+
+
 #Setting Up GUI
 root = tk.Tk()
-root.title("EDL Parser - for Vantage")
+root.title(creditsTitle)
 root.iconbitmap('C:/Users/Nicole/Desktop/Python-Travis/EDLParser/sources/pw.ico')
 root.geometry ("1800x900+80+80")
 
@@ -456,7 +446,9 @@ root.geometry ("1800x900+80+80")
 def nothing():
 	pass
 
-
+#processes hyperlinks/URLs
+def openLink(url):
+	webbrowser.open_new(url)
 
 #Key Binding
 root.bind('<Control-Key-o>', open_file)
@@ -566,17 +558,18 @@ editmenu.add_command (label="Cut", command=nothing, accelerator ="Ctrl+X")
 editmenu.add_command (label="Copy", command=nothing, accelerator ="Ctrl+C")
 editmenu.add_command (label="Paste", command=nothing, accelerator ="Ctrl+V")
 
-viewmenu = tk.Menu(menubar, tearoff=0)
-menubar.add_cascade(label="View", menu=viewmenu)
-viewmenu.add_command (label="Avid EDL", command=nothing)
-viewmenu.add_command (label="Vantage CML", command=nothing)
-viewmenu.add_command (label="Vantage CSV", command=nothing)
+# viewmenu = tk.Menu(menubar, tearoff=0)
+# menubar.add_cascade(label="View", menu=viewmenu)
+# viewmenu.add_command (label="Avid EDL", command=nothing)
+# viewmenu.add_command (label="Vantage CML", command=nothing)
+# viewmenu.add_command (label="Vantage CSV", command=nothing)
 
 helpmenu = tk.Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=helpmenu)
-helpmenu.add_command (label="Documentation", command=nothing)
+helpmenu.add_command (label="Documentation", command=lambda: openLink(creditsDocumentation))
+helpmenu.add_command (label="GitHub Project", command=lambda: openLink(creditsProjectSource))
 helpmenu.add_separator()
-helpmenu.add_command (label="About", command=nothing)
+helpmenu.add_command (label="About", command=aboutPopup)
 
 # #GUI - Top buttons
 t_btn1 = tk.Button(topRow, text="Open EDL", command=lambda: open_file(None))
