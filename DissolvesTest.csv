@@ -1,9 +1,0 @@
-10-IN.nbtitle,TFN,URL,PROMO
-10-IN.nbtitle,{$$Workflow_TFN},{$$Workflow_URL},{$$Workorder_Promo}
-10-INOUT.nbtitle,TFN,URL,PROMO
-10-INOUT.nbtitle,{$$Workflow_TFN},{$$Workflow_URL},{$$Workorder_Promo}
-10-OUT.nbtitle,TFN,URL,PROMO
-10-OUT.nbtitle,{$$Workflow_TFN},{$$Workflow_URL},{$$Workorder_Promo}
-CUTSONLY.nbtitle,TFN,URL,PROMO
-CUTSONLY.nbtitle,{$$Workflow_TFN},{$$Workflow_URL},{$$Workorder_Promo}
-
