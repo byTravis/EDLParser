@@ -22,7 +22,7 @@ dropFrame=False
 framerate=29.97
 framerateRounded = round(framerate)
 hourMark = "01:00:00:00"  #one hour mark where first frame of action of video happens.
-fadeOffset = "00:00:00:01"  #this compensates for the fade in Vantage.  Vantage treats a fade where first frame is 0% opacity and the last frame is 100% opacity.  Avid treats the first & last frame as showing some of the video.  This cheats that look so first or last frame isn't blank.
+dissolveOffset = "00:00:00:01"  #this compensates for the fade in Vantage.  Vantage treats a fade where first frame is 0% opacity and the last frame is 100% opacity.  Avid treats the first & last frame as showing some of the video.  This cheats that look so first or last frame isn't blank.
 
 
 
@@ -30,10 +30,6 @@ fadeOffset = "00:00:00:01"  #this compensates for the fade in Vantage.  Vantage 
 background_color = "#e6e6ff"
 textFrameWidth="68"
 textFrameHeight="45"
-
-
-
-
 
 
 #New - Clear content
@@ -319,6 +315,7 @@ def generateCml(cmlItems):
 		curCount=0
 		editIn=timecodeFormatting(line[3])
 		editOut=timecodeFormatting(line[4])
+		editDissolveOffset=timecodeFormatting(dissolveOffset)
 		
 		editHourMark=timecodeFormatting(hourMark)
 
@@ -331,12 +328,12 @@ def generateCml(cmlItems):
 		if line[5] == "null" and line[1] =="D":  #Dissolve In
 			print(line[0], "  This is a dissolve in.  ", line[2], "using:  (", cmlItems[curCount+1][0], ")  ", cmlItems[curCount+1][5])
 
-			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn + '-' + editHourMark + '}" filter="mute" >\n')		
+			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn + '-' + editDissolveOffset + '-' + editHourMark + '}" filter="mute" >\n')		
 			cmlTxt.insert("end",'				<Head>\n')
-			cmlTxt.insert("end",'					<Fade duration="' + editDissolve + '" />\n')
+			cmlTxt.insert("end",'					<Fade duration="{' + editDissolve + '+' + editDissolveOffset + '}" />\n')
 			cmlTxt.insert("end",'				</Head>\n')
 			cmlTxt.insert("end",'				<Tail>\n')
-			cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '-' + editIn + '}" />\n')
+			cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '+' + editDissolveOffset + '-' + editIn + '}" />\n')
 			cmlTxt.insert("end",'				</Tail>\n')
 			cmlTxt.insert("end",'			</Video>\n\n')
 			editSource+=1
@@ -348,8 +345,8 @@ def generateCml(cmlItems):
 
 			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn +  '-' + editHourMark + '}" filter="mute" >\n')
 			cmlTxt.insert("end",'				<Tail>\n')
-			cmlTxt.insert("end",'					<Fade duration="' + editDissolve + '" />\n')
-			cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '-' + editIn + '}" />\n')
+			cmlTxt.insert("end",'					<Fade duration="{' + editDissolve + '+' + editDissolveOffset + '}" />\n')
+			cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '+' + editDissolveOffset + '-' + editIn + '}" />\n')
 			cmlTxt.insert("end",'				</Tail>\n')
 			cmlTxt.insert("end",'			</Video>\n\n')
 			editSource+=1
