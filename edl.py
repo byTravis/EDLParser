@@ -322,15 +322,26 @@ def generateCml(cmlItems):
 			editDissolve="null"
 
 		if line[5] == "null" and line[1] =="D":  #Dissolve In
-			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn + '-' + editDissolveOffset + '-' + editHourMark + '}" filter="mute" >\n')		
-			cmlTxt.insert("end",'				<Head>\n')
-			cmlTxt.insert("end",'					<Fade duration="{' + editDissolve + '+' + editDissolveOffset + '}" />\n')
-			cmlTxt.insert("end",'				</Head>\n')
-			cmlTxt.insert("end",'				<Tail>\n')
-			cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '+' + editDissolveOffset + '-' + editIn + '}" />\n')
-			cmlTxt.insert("end",'				</Tail>\n')
-			cmlTxt.insert("end",'			</Video>\n\n')
-			editSource+=1
+			if line[3]=="01:00:00:00": #doesn't add the dissolve offset if this is the first title starting on the first frame of action because it will create first edit before the media.
+				cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn + '-' + editHourMark + '}" filter="mute" >\n')		
+				cmlTxt.insert("end",'				<Head>\n')
+				cmlTxt.insert("end",'					<Fade duration="{' + editDissolve +  '}" />\n')
+				cmlTxt.insert("end",'				</Head>\n')
+				cmlTxt.insert("end",'				<Tail>\n')
+				cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '-' + editIn + '}" />\n')
+				cmlTxt.insert("end",'				</Tail>\n')
+				cmlTxt.insert("end",'			</Video>\n\n')
+				editSource+=1
+			else:  #adds the dissolve offset
+				cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn + '-' + editDissolveOffset + '-' + editHourMark + '}" filter="mute" >\n')		
+				cmlTxt.insert("end",'				<Head>\n')
+				cmlTxt.insert("end",'					<Fade duration="{' + editDissolve + '+' + editDissolveOffset + '}" />\n')
+				cmlTxt.insert("end",'				</Head>\n')
+				cmlTxt.insert("end",'				<Tail>\n')
+				cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '+' + editDissolveOffset + '-' + editIn + '}" />\n')
+				cmlTxt.insert("end",'				</Tail>\n')
+				cmlTxt.insert("end",'			</Video>\n\n')
+				editSource+=1
 		
 		elif line[5] != "null" and line[1] =="D":  #Dissolve Out
 			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn +  '-' + editHourMark + '}" filter="mute" >\n')
