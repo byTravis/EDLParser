@@ -1,32 +1,43 @@
+#Dissolves Branch
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import *
 import os
+import webbrowser
 
+
+#credits info
+creditsTitle = "EDL Parcer for Vantage"
+creditsAuthor = "Travis"
+creditsVersion ="v2"
+creditsDate="1/28/2021"
+creditsProjectSource="https://github.com/byTravis/EDLParser/"
+creditsDocumentation = "https://github.com/byTravis/EDLParser/wiki"
 
 #Variable Names for VANTAGE - These are the variables used in Vantage.
-
 vantage_tfn = "Workflow_TFN"
 vantage_url = "Workflow_URL"
 vantage_promo = "Workorder_Promo"
 vantage_source_path = "Workflow_SupportingFilesPath"
 vantage_master_name = "Workflow_Master"
 
-#Variables
+#Global Variables
 cur_dir = os.getcwd()
 cmlItems=[]
 file_name=False
+dropFrame=False
+framerate=29.97
+framerateRounded = round(framerate)
+hourMark = "01:00:00:00"  #one hour mark where first frame of action of video happens.
+dissolveOffset = "00:00:00:01"  #this compensates for the fade in Vantage.  Vantage treats a fade where first frame is 0% opacity and the last frame is 100% opacity.  Avid treats the first & last frame as showing some of the video.  This cheats that look so first or last frame isn't blank.
+
 
 
 #Set Up UI Elements
 background_color = "#e6e6ff"
 textFrameWidth="68"
 textFrameHeight="45"
-
-
-
-
 
 
 #New - Clear content
@@ -37,13 +48,13 @@ def new_file(x):
 	csvTitlesList.config(text="")
 	global file_name
 	file_name = ""
-	root.title(f"EDL Parser - for Vantage")
+	root.title(creditsTitle)
 
 #Open File
 def open_file(x):
 	global file_name
 	file_name = ""
-	root.title(f"EDL Parser - for Vantage")	
+	root.title(creditsTitle)	
 	edlTxt.delete("1.0", "end")
 	cmlTxt.delete("1.0", "end")
 	csvTxt.delete("1.0", "end")
@@ -52,216 +63,295 @@ def open_file(x):
 	edl_file = filedialog.askopenfilename(initialdir=cur_dir, title="Open Avid EDL", filetypes=(("Avid EDL", "*.edl"),))
 	
 	file_name = os.path.split(edl_file)[1]
-	root.title(f"EDL Parser - for Vantage  |  {file_name}")
+	root.title(f"{creditsTitle}  |  {file_name}")
 	file_name = file_name.replace(".edl", "")
 	
 	edl_file = open(edl_file, 'r')
-	content = edl_file.readlines()
+	content = edl_file.readlines()  #each line is an item in a list
 	edl_file.close()	
 	for line in content:
 		# line=line.strip()
 		edlTxt.insert ("end", line)
 		# print(line)
-	
 	parse_edl()
-	generateCsv()
+	# generateCsv()
+
+
+
+#Converts frames to Timecode
+def framesToTC(frames):
+	frames=int(frames)
+
+	framesSS=int(frames/framerateRounded)
+	framesFF=frames-framesSS*framerateRounded
+
+	if framesSS<10:
+		framesSS="0" + str(framesSS)
+	else:
+		framesSS=str(framesSS)
+		
+	if framesFF<10:
+		framesFF="0" + str(framesFF)
+	else:
+		framesFF=str(framesFF)
+	
+	timecode = "00:00:"+ framesSS + ":" + framesFF
+	return(timecode)
+
+
+#Formats the timecode string to indicate drop or nondrop syntax
+def timecodeFormatting(timecode):
+	if dropFrame==True:
+		timecode=str(timecode.replace(":", ";").replace(";", ":", 2)) + "@" + str(framerate) #sets dropframe formattting
+	return(timecode)
+
 
 #Parse EDL data
 def parse_edl():
 	cmlTxt.delete("1.0", "end")
-	cml_parsed = edlTxt.get("1.0", "end").splitlines()  #each line in the text box as a list item
-	global cmlItems #nested list with everything
+	cml_parsed = edlTxt.get("1.0", "end").splitlines()  #each line in the text box as a list item.  Getting it from the text box so if I edit the box, it will use those values instead of orig EDL
+		
+	global cmlItems #nested list within a list with everything
 	cmlItems = []  #clears the list in case something was in there.
 	edlList=[]  
 	curCount=0
-	dropFrame=False
+	
+	
 	for line in cml_parsed:
 		if line =="FCM: DROP FRAME":
+			global dropFrame 
 			dropFrame = True
+
 		splitColumns=line.split()  #breaks each line into a list of words
-		edlList.append(splitColumns)
-		
-		if line.find("NBTITLE") != -1:
-			cmlList=[]  #short term list of a single instance
-			if dropFrame == True:
-				nbTitle = edlList[curCount][1]  #NB Title
-				inPoint= edlList[curCount-1][-2] #In point
-				outPoint = edlList[curCount-1][-1] #Out Point
-				inPoint= inPoint.replace(":", ";").replace(";", ":", 2) #sets dropframe formattting
-				outPoint= outPoint.replace(":", ";").replace(";", ":", 2) #sets dropframe formattting
+		edlList.append(splitColumns)  #creates a nested list.  Each line of the EDL is a list of column contents for that line.
+	
+	edlList.pop(0)#removes 1st line
+	edlList.pop(0)#removes 2nd line
+	listLength = len(edlList)
 
-				cmlList.append(nbTitle)
-				cmlList.append(inPoint)
-				cmlList.append(outPoint)
-				cmlItems.append(cmlList) 
-
+	
+	for line in edlList:  #parses the line removing unneeded info and formatting the list in a way that makes sense.
+		if curCount+1<listLength:  #sets the nbtitle name
+			if edlList[curCount+1][0] == "*":
+				nbTitle = edlList[curCount+1][1]
 			else:
-				cmlList.append(edlList[curCount][1])  #NB Title
-				cmlList.append(edlList[curCount-1][-2]) #In point
-				cmlList.append(edlList[curCount-1][-1]) #Out Point
-				cmlItems.append(cmlList) #nested list with everything
+				nbTitle = "null"
 
-		curCount +=1
+
+		if line[-1] != line[-2] and line[0] !="*":  #parses out the edits
+			parsedLine =[]
+			parsedLine.append(line[0])  #event number
+			# print(line[0])
+			parsedLine.append(line[3])  #cut or dissolve
+			# print(line[3])
+			if line[3]=="D":
+				parsedLine.append(line[4])  # if dissolve, length of dissolve
+				# print(line[4])
+			else:
+				parsedLine.append("null")  #if cut, put in placeholder of null to maintain list position of other elements
+				# print("null")
+			parsedLine.append(line[-2])  #in point
+			# print(line[-2])
+			parsedLine.append(line[-1])  #out point
+			# print(line[-1])
+			parsedLine.append(nbTitle)  #nb title
+			# print(nbTitle)			
+			
+			cmlItems.append(parsedLine)  #adds this single event list to the main list.
+
+		curCount+=1
+	cmlItems.append(["null", "null",  "null",  "null",  "null",  "null"])
+	
 	generateCml(cmlItems)
 
 
 
-#Generate CML
-def generateCml(parsedData):
-	layer=1  #sequence layer and video source
+
+
+# #Generate CML
+def generateCml(cmlItems):
+	layer=1  #sequence layer
+	editSource=1  #source number
+	curCount=0
+
+
 	#insert first part of header
-	cmlTxt.insert("end", '<?xml version="1.0" encoding="utf-8"?>\n')
-	cmlTxt.insert("end", '<Composition xmlns="Telestream.Soa.Facility.Playlist">\n')
-	cmlTxt.insert("end", '	<Source identifier="999999">\n')
-	cmlTxt.insert("end", '		<File location="{$$' + vantage_source_path + '}\\{$$' + vantage_master_name + '}" />\n')
+	cmlTxt.insert("end", '''<?xml version="1.0" encoding="utf-8"?>
+<Composition xmlns="Telestream.Soa.Facility.Playlist">
+	<Source identifier="999999">''')
+	cmlTxt.insert("end", '		<File location="{$$' + vantage_source_path + '}\\{$$' + vantage_master_name + '}" /> \n')
 	cmlTxt.insert("end", '		<Subtitle />\n')
 	cmlTxt.insert("end", '	</Source>\n')
-	
-	for ee in parsedData:  #inserts sources in header
-		cmlTxt.insert("end", '	<Source identifier="' + str(layer) +'">\n')
-		cmlTxt.insert("end", '		<File location="{$$' + vantage_source_path + '}\\' + cmlItems[layer-1][0].replace("NBTITLE", "nbtitle") + '" />\n')
-		cmlTxt.insert("end", '	</Source>\n\n')
-		layer+=1
+	cmlTxt.insert("end",'\n')	
 
-	
+	for title in cmlItems:  #Sets sources
+		if title[5] == "null" and title[1] =="D":
+			cmlTxt.insert("end", '	<Source identifier="' + str(layer) +'">\n')
+			cmlTxt.insert("end", '		<File location="{$$' + vantage_source_path + '}\\' + cmlItems[curCount+1][5].replace("NBTITLE", "nbtitle") + '" />\n')
+			cmlTxt.insert("end", '	</Source>\n\n')
+			layer+=1
+							
+		elif title[5] != "null":
+			cmlTxt.insert("end", '	<Source identifier="' + str(layer) +'">\n')
+			cmlTxt.insert("end", '		<File location="{$$' + vantage_source_path + '}\\' + title[5].replace("NBTITLE", "nbtitle") + '" />\n')
+			cmlTxt.insert("end", '	</Source>\n\n')
+			layer+=1
+		curCount+=1
+		
+
 	#Insert Slate and Black code to CSV
 	cmlTxt.insert("end", """	
-	<Sequence layer="1">
-		<Segment>
-			<Image layer="0" location="C:\\Users\\Administrator\\Desktop\\AutoConform\\AutoSlate\\PWSlate.png" duration="{$$SlateLengthTimecode}" layout="center" fill="loop" />		
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="left" vertical-align="top" overflow="resize"> 
-					{$$Workorder_Title} 
-					<Area left="715px" right="1610px" bottom="970px" top="350px"  />
+<Sequence layer="1">
+	<Segment>
+		<Image layer="0" location="C:\\Users\\Administrator\\Desktop\\AutoConform\\AutoSlate\\PWSlate.png" duration="{$$SlateLengthTimecode}" layout="center" fill="loop" />		
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="left" vertical-align="top" overflow="resize"> 
+				{$$Workorder_Title} 
+				<Area left="715px" right="1610px" bottom="970px" top="350px"  />
+			</Title>
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
+				{$$Workorder_Agency} 
+				<Area left="715px" right="1610px" top="455px"  />
+			</Title>
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
+				{$$Workorder_Client} 
+				<Area left="715px" right="1610px" top="510px"  />
+			</Title>
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
+				{$$Workorder_Date} 
+				<Area left="715px" right="1610px" top="565px"  />
 				</Title>
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-					{$$Workorder_Agency} 
-					<Area left="715px" right="1610px" top="455px"  />
-				</Title>
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-					{$$Workorder_Client} 
-					<Area left="715px" right="1610px" top="510px"  />
-				</Title>
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-					{$$Workorder_Date} 
-					<Area left="715px" right="1610px" top="565px"  />
-					</Title>
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-					{$$Workorder_TRT}
-					<Area left="715px" right="1610px" top="620px"  />
-				</Title>
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-					{$$Workorder_SlatedISCI} 
-					<Area left="715px" right="1610px" top="675px"  />
-				</Title>
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-					{$$Workflow_TFN} 
-					<Area left="715px" right="1610px" top="730px"  />
-				</Title>
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-					{$$Workflow_URL} 
-					<Area left="715px" right="1610px" top="785px"  />
-				</Title>
-						
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-					{$$Workorder_Promo} 
-					<Area left="715px"  right="1610px" top="840px" />
-				</Title>			
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
+				{$$Workorder_TRT}
+				<Area left="715px" right="1610px" top="620px"  />
+			</Title>
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
+				{$$Workorder_SlatedISCI} 
+				<Area left="715px" right="1610px" top="675px"  />
+			</Title>
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
+				{$$Workflow_TFN} 
+				<Area left="715px" right="1610px" top="730px"  />
+			</Title>
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
+				{$$Workflow_URL} 
+				<Area left="715px" right="1610px" top="785px"  />
+			</Title>
+					
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
+				{$$Workorder_Promo} 
+				<Area left="715px"  right="1610px" top="840px" />
+			</Title>			
+
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
+				Title:
+				<Area left="310px" right="685px" bottom="970px" top="350px"  />
+			</Title>	
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
+				Agency:
+				<Area left="310px" right="685px" bottom="970px" top="455px"  />
+			</Title>				
+
+
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
+				Client:
+				<Area left="310px" right="685px" bottom="970px" top="510px"  />
+			</Title>	
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
+				Date:
+				<Area left="310px" right="685px" bottom="970px" top="565px"  />
+			</Title>	
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
+				Length:
+				<Area left="310px" right="685px" bottom="970px" top="620px"  />
+			</Title>	
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
+				ISCI:
+				<Area left="310px" right="685px" bottom="970px" top="675px"  />
+			</Title>	
+		
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
+				#:
+				<Area left="310px" right="685px" bottom="970px" top="730px"  />
+			</Title>	
+
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
+				URL:
+				<Area left="310px" right="685px" bottom="970px" top="785px"  />
+			</Title>	
+
+			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
+				{$$Workorder_PromoTitle}
+				<Area left="310px" right="685px" bottom="970px" top="840px"  />
+			</Title>
+	</Segment>
+
+	<Segment>
+		<Canvas align="head" adjust="body" duration="{$$BlackHeadTimecode}" Background="black" layer="0" />                           
+	</Segment>
+
+	<Segment>
+		<Video source="999999" />			
+			""")
+	cmlTxt.insert("end",'\n')
+
+
+	for line in cmlItems:  #creates edits
+		curCount=0
+		editIn=timecodeFormatting(line[3])
+		editOut=timecodeFormatting(line[4])
+		editDissolveOffset=timecodeFormatting(dissolveOffset)
+		
+		editHourMark=timecodeFormatting(hourMark)
+
+		if line[2] != "null":
+			editDissolve=framesToTC(line[2])
+			editDissolve=timecodeFormatting(editDissolve)
+		else:
+			editDissolve="null"
+
+		if line[5] == "null" and line[1] =="D":  #Dissolve In
+			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn + '-' + editDissolveOffset + '-' + editHourMark + '}" filter="mute" >\n')		
+			cmlTxt.insert("end",'				<Head>\n')
+			cmlTxt.insert("end",'					<Fade duration="{' + editDissolve + '+' + editDissolveOffset + '}" />\n')
+			cmlTxt.insert("end",'				</Head>\n')
+			cmlTxt.insert("end",'				<Tail>\n')
+			cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '+' + editDissolveOffset + '-' + editIn + '}" />\n')
+			cmlTxt.insert("end",'				</Tail>\n')
+			cmlTxt.insert("end",'			</Video>\n\n')
+			editSource+=1
+		
+		elif line[5] != "null" and line[1] =="D":  #Dissolve Out
+			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn +  '-' + editHourMark + '}" filter="mute" >\n')
+			cmlTxt.insert("end",'				<Tail>\n')
+			cmlTxt.insert("end",'					<Fade duration="{' + editDissolve + '+' + editDissolveOffset + '}" />\n')
+			cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '+' + editDissolveOffset + '-' + editIn + '}" />\n')
+			cmlTxt.insert("end",'				</Tail>\n')
+			cmlTxt.insert("end",'			</Video>\n\n')
+			editSource+=1
 	
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
-					Title:
-					<Area left="310px" right="685px" bottom="970px" top="350px"  />
-				</Title>	
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
-					Agency:
-					<Area left="310px" right="685px" bottom="970px" top="455px"  />
-				</Title>				
+		elif line[5] != "null" and line[1] =="C":  #Cuts
+			cmlTxt.insert("end",'			<Video source="'+ str(editSource) + '" align="head" adjust="edge" offset="{' + editIn + '-' + editHourMark + '}" filter="mute" >\n')
+			cmlTxt.insert("end",'				<Tail>\n')
+			cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ editOut + '-' + editIn +   '}" />\n')
+			cmlTxt.insert("end",'				</Tail>\n')
+			cmlTxt.insert("end",'			</Video>\n\n')
+			editSource+=1
+
+		curCount+=1	
 
 
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
-					Client:
-					<Area left="310px" right="685px" bottom="970px" top="510px"  />
-				</Title>	
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
-					Date:
-					<Area left="310px" right="685px" bottom="970px" top="565px"  />
-				</Title>	
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
-					Length:
-					<Area left="310px" right="685px" bottom="970px" top="620px"  />
-				</Title>	
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
-					ISCI:
-					<Area left="310px" right="685px" bottom="970px" top="675px"  />
-				</Title>	
-			
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
-					#:
-					<Area left="310px" right="685px" bottom="970px" top="730px"  />
-				</Title>	
-
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
-					URL:
-					<Area left="310px" right="685px" bottom="970px" top="785px"  />
-				</Title>	
-
-				<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="bold" foreground-color="FF1b8fa2" background-color="transparent" wrap="true" horizontal-align="right" vertical-align="top" overflow="resize"> 
-					{$$Workorder_PromoTitle}
-					<Area left="310px" right="685px" bottom="970px" top="840px"  />
-				</Title>
-		</Segment>
-
-		<Segment>
-			<Canvas align="head" adjust="body" duration="{$$BlackHeadTimecode}" Background="black" layer="0" />                           
-		</Segment>
-
-	""")
-	
-	
-	
-	
-	
-	
-	#insert last part of header wich includes the video source for the first segment
-	cmlTxt.insert("end", '\n')
-	cmlTxt.insert("end", '		<Segment>\n')
-	cmlTxt.insert("end", '			<Video source="999999" />\n')
-	layer=1 #resets layer for next for loop
-
-
-
-
-
-#test at 246
-
-
-
-
-
-
-	for e in parsedData:  #creates the edits
-		nbTitle=e[0]
-		inEdit = e[1]
-		outEdit = e[2]		
-		cmlTxt.insert("end",'			<Video source="'+ str(layer) + '" align="head" adjust="edge" offset="{' + inEdit + '@29.97-01:00:00;00@29.97}" filter="mute" >\n')
-		cmlTxt.insert("end",'				<Tail>\n')
-		cmlTxt.insert("end",'					<Edit mode="duration" time="{'+ outEdit + '@29.97-' + inEdit+   '@29.97}" />\n')
-		cmlTxt.insert("end",'				</Tail>\n')
-		cmlTxt.insert("end",'			</Video>\n\n')
-		layer+=1
-
-	# cmlTxt.insert ("end", "</Composition>")  #footer
 	#Footer Code inserted at the end of the file
 	cmlTxt.insert ("end", """
 		</Segment>
@@ -273,6 +363,7 @@ def generateCml(parsedData):
 	</Sequence>
 
 </Composition>""")  #footer
+
 	generateCsv()
 
 
@@ -283,8 +374,10 @@ def generateCsv():
 	csvTxt.delete("1.0", "end")
 	title_set=[]
 	titleList=""
+
 	for e in cmlItems:
-		title_set.append(e[0])
+		if e[5] !="null":
+			title_set.append(e[5])
 
 	title_set = set(title_set)
 	for title in title_set:
@@ -297,6 +390,8 @@ def generateCsv():
 		# csvTxt.insert("end", title + ",{$$" + vantage_promo + "}\n")
 		titleList=titleList + "\n     >  " + title
 	csvTitlesList.config(text=titleList)
+
+
 	
 #Saving CML and CSV
 
@@ -336,9 +431,13 @@ def save_success():
 	messagebox.showinfo("Success!", "Your CML and CSV files have been saved.")
 
 
+def aboutPopup():
+	messagebox.showinfo("About " + creditsTitle, creditsTitle + "\nCreated by " + creditsAuthor +  "\nVersion: " + creditsVersion + "\nDate: " + creditsDate + "\nGitHub: " + creditsProjectSource)
+
+
 #Setting Up GUI
 root = tk.Tk()
-root.title("EDL Parser - for Vantage")
+root.title(creditsTitle)
 root.iconbitmap('C:/Users/Nicole/Desktop/Python-Travis/EDLParser/sources/pw.ico')
 root.geometry ("1800x900+80+80")
 
@@ -347,7 +446,9 @@ root.geometry ("1800x900+80+80")
 def nothing():
 	pass
 
-
+#processes hyperlinks/URLs
+def openLink(url):
+	webbrowser.open_new(url)
 
 #Key Binding
 root.bind('<Control-Key-o>', open_file)
@@ -457,17 +558,18 @@ editmenu.add_command (label="Cut", command=nothing, accelerator ="Ctrl+X")
 editmenu.add_command (label="Copy", command=nothing, accelerator ="Ctrl+C")
 editmenu.add_command (label="Paste", command=nothing, accelerator ="Ctrl+V")
 
-viewmenu = tk.Menu(menubar, tearoff=0)
-menubar.add_cascade(label="View", menu=viewmenu)
-viewmenu.add_command (label="Avid EDL", command=nothing)
-viewmenu.add_command (label="Vantage CML", command=nothing)
-viewmenu.add_command (label="Vantage CSV", command=nothing)
+# viewmenu = tk.Menu(menubar, tearoff=0)
+# menubar.add_cascade(label="View", menu=viewmenu)
+# viewmenu.add_command (label="Avid EDL", command=nothing)
+# viewmenu.add_command (label="Vantage CML", command=nothing)
+# viewmenu.add_command (label="Vantage CSV", command=nothing)
 
 helpmenu = tk.Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=helpmenu)
-helpmenu.add_command (label="Documentation", command=nothing)
+helpmenu.add_command (label="Documentation", command=lambda: openLink(creditsDocumentation))
+helpmenu.add_command (label="GitHub Project", command=lambda: openLink(creditsProjectSource))
 helpmenu.add_separator()
-helpmenu.add_command (label="About", command=nothing)
+helpmenu.add_command (label="About", command=aboutPopup)
 
 # #GUI - Top buttons
 t_btn1 = tk.Button(topRow, text="Open EDL", command=lambda: open_file(None))
@@ -477,7 +579,7 @@ t_btn1.grid(row="0", column="1", padx="5")
 t_btn2.grid(row="0", column="2", padx="5")
 t_btn3.grid(row="0", column="3", padx="5")
 
-#GUI - Bottom buttons
+#GUI - Bottom buttons 1
 # b_btn1 = tk.Button(bottomRow, text="Button 1")
 # b_btn2 = tk.Button(bottomRow, text="Button 2")
 # b_btn3 = tk.Button(bottomRow, text="Button 3")
