@@ -579,7 +579,7 @@ t_btn1.grid(row="0", column="1", padx="5")
 t_btn2.grid(row="0", column="2", padx="5")
 t_btn3.grid(row="0", column="3", padx="5")
 
-#GUI - Bottom buttons
+#GUI - Bottom buttons 1
 # b_btn1 = tk.Button(bottomRow, text="Button 1")
 # b_btn2 = tk.Button(bottomRow, text="Button 2")
 # b_btn3 = tk.Button(bottomRow, text="Button 3")
