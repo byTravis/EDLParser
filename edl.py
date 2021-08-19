@@ -53,6 +53,7 @@ def new_file(x):
 #Open File
 def open_file(x):
 	global file_name
+	global cur_dir
 	file_name = ""
 	root.title(creditsTitle)	
 	edlTxt.delete("1.0", "end")
@@ -63,8 +64,11 @@ def open_file(x):
 	edl_file = filedialog.askopenfilename(initialdir=cur_dir, title="Open Avid EDL", filetypes=(("Avid EDL", "*.edl"),))
 	
 	file_name = os.path.split(edl_file)[1]
+	cur_dir = os.path.split(edl_file)[0]
 	root.title(f"{creditsTitle}  |  {file_name}")
 	file_name = file_name.replace(".edl", "")
+
+
 	
 	edl_file = open(edl_file, 'r')
 	content = edl_file.readlines()  #each line is an item in a list
@@ -449,7 +453,7 @@ def aboutPopup():
 #Setting Up GUI
 root = tk.Tk()
 root.title(creditsTitle)
-root.iconbitmap('C:/Users/Nicole/Desktop/Python-Travis/EDLParser/sources/pw.ico')
+# root.iconbitmap('C:/Users/Nicole/Desktop/Python-Travis/EDLParser/sources/pw.ico')
 root.geometry ("1800x900+80+80")
 
 

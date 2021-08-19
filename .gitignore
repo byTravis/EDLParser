@@ -1,4 +1,8 @@
 /reference/
+/dist/
+/build/
+/__pycache__/
 *.cml
 *.csv
 *.edl
+*.spec
