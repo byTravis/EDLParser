@@ -10,7 +10,7 @@ import webbrowser
 #credits info
 creditsTitle = "EDL Parcer for Vantage"
 creditsAuthor = "Travis"
-creditsVersion ="v2"
+creditsVersion ="v2.1"
 creditsDate="1/28/2021"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "https://github.com/byTravis/EDLParser/wiki"
@@ -137,7 +137,15 @@ def parse_edl():
 	for line in edlList:  #parses the line removing unneeded info and formatting the list in a way that makes sense.
 		if curCount+1<listLength:  #sets the nbtitle name
 			if edlList[curCount+1][0] == "*":
-				nbTitle = edlList[curCount+1][1]
+				if edlList[curCount+1][1].find(".NBTITLE") != -1:
+					nbTitle = edlList[curCount+1][1]
+					print(edlList[curCount+1][1])
+					print("I dont' have to add the extention")
+				else:
+					nbTitle = edlList[curCount+1][1] + ".NBTITLE"
+					print(edlList[curCount+1][1])
+					print("I have to add the extention")
+
 			else:
 				nbTitle = "null"
 
@@ -189,7 +197,7 @@ def generateCml(cmlItems):
 	cmlTxt.insert("end",'\n')	
 
 	for title in cmlItems:  #Sets sources
-		if title[5] == "null" and title[1] =="D":
+		if title[5] == "null" and title[1] =="D":		
 			cmlTxt.insert("end", '	<Source identifier="' + str(layer) +'">\n')
 			cmlTxt.insert("end", '		<File location="{$$' + vantage_source_path + '}\\' + cmlItems[curCount+1][5].replace("NBTITLE", "nbtitle") + '" />\n')
 			cmlTxt.insert("end", '	</Source>\n\n')
