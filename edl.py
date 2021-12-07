@@ -2,14 +2,15 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import *
+from tkinter import ttk
 import os
 import webbrowser
 
-
+#----------------- GLOBAL VARIABLES -----------------
 #credits info
 creditsTitle = "EDL Parcer for Vantage"
 creditsAuthor = "Travis"
-creditsVersion ="v2.2"
+creditsVersion ="v3.0"
 creditsDate="1/28/2021"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "https://github.com/byTravis/EDLParser/wiki"
@@ -31,14 +32,28 @@ framerateRounded = round(framerate)
 hourMark = "01:00:00:00"  #one hour mark where first frame of action of video happens.
 dissolveOffset = "00:00:00:01"  #this compensates for the fade in Vantage.  Vantage treats a fade where first frame is 0% opacity and the last frame is 100% opacity.  Avid treats the first & last frame as showing some of the video.  This cheats that look so first or last frame isn't blank.
 
-
-
-#Set Up UI Elements
-background_color = "#e6e6ff"
+#GUI Elements
+background_color = "gray"
+tabBG = "#e6e6ff"
 textFrameWidth="68"
 textFrameHeight="45"
 
+# ----------------- GLOBAL FUNCTIONS -----------------
+#Setting Up GUI
+root = tk.Tk()
+root.title(creditsTitle)
+# root.iconbitmap('C:/Users/Nicole/Desktop/Python-Travis/EDLParser/sources/pw.ico')
+root.geometry ("1800x900+80+80")
 
+#placeholder for functions
+def nothing():
+	pass
+
+#processes hyperlinks/URLs
+def openLink(url):
+	webbrowser.open_new(url)
+
+# ----------------- EDL PARSER FUNCTIONS -----------------
 #New - Clear content
 def new_file(x):
 	edlTxt.delete("1.0", "end")
@@ -79,8 +94,6 @@ def open_file(x):
 	parse_edl()
 	# generateCsv()
 
-
-
 #Converts frames to Timecode
 def framesToTC(frames):
 	frames=int(frames)
@@ -101,13 +114,11 @@ def framesToTC(frames):
 	timecode = "00:00:"+ framesSS + ":" + framesFF
 	return(timecode)
 
-
 #Formats the timecode string to indicate drop or nondrop syntax
 def timecodeFormatting(timecode):
 	if dropFrame==True:
 		timecode=str(timecode.replace(":", ";").replace(";", ":", 2)) + "@" + str(framerate) #sets dropframe formattting
 	return(timecode)
-
 
 #Parse EDL data
 def parse_edl():
@@ -174,10 +185,6 @@ def parse_edl():
 	cmlItems.append(["null", "null",  "null",  "null",  "null",  "null"])
 	
 	generateCml(cmlItems)
-
-
-
-
 
 # #Generate CML
 def generateCml(cmlItems):
@@ -388,9 +395,6 @@ def generateCml(cmlItems):
 
 	generateCsv()
 
-
-
-
 #generate CSV and Titles List
 def generateCsv():
 	csvTxt.delete("1.0", "end")
@@ -413,21 +417,10 @@ def generateCsv():
 		titleList=titleList + "\n     >  " + title
 	csvTitlesList.config(text=titleList)
 
-
-
 #Pop-Outs
 def popout_edlTxt():
 	return
 
-
-
-
-
-
-
-
-
-	
 #Saving CML and CSV
 def save_files(nothing):
 	csv_file = cur_dir + "\\" + file_name + ".csv"
@@ -445,7 +438,6 @@ def save_files(nothing):
 		cml_file.close()
 		save_success()
 
-
 #Save - Overwrite Popup
 
 def overwrite_files(csv_file, cml_file):
@@ -459,119 +451,26 @@ def overwrite_files(csv_file, cml_file):
 		cml_file.write(cmlTxt.get(1.0, END))
 		cml_file.close()
 		save_success()
-		
 
 def save_success():
 	messagebox.showinfo("Success!", "Your CML and CSV files have been saved.")
-
 
 def aboutPopup():
 	messagebox.showinfo("About " + creditsTitle, creditsTitle + "\nCreated by " + creditsAuthor +  "\nVersion: " + creditsVersion + "\nDate: " + creditsDate + "\nGitHub: " + creditsProjectSource)
 
 
-#Setting Up GUI
-root = tk.Tk()
-root.title(creditsTitle)
-# root.iconbitmap('C:/Users/Nicole/Desktop/Python-Travis/EDLParser/sources/pw.ico')
-root.geometry ("1800x900+80+80")
 
 
-#placeholder for functions
-def nothing():
-	pass
-
-#processes hyperlinks/URLs
-def openLink(url):
-	webbrowser.open_new(url)
-
-#Key Binding
-root.bind('<Control-Key-o>', open_file)
-root.bind('<Control-Key-O>', open_file)
-root.bind('<Control-Key-n>', new_file)
-root.bind('<Control-Key-N>', new_file)
-root.bind('<Control-Key-s>', save_files)
-root.bind('<Control-Key-S>', save_files)
-
-
-#GUI - Framework
-mainFrame = tk.Frame(root, bd="10", bg=background_color)
-mainFrame.pack(fill="both",expand=1)
-
-topRow = tk.Frame(mainFrame, bg=background_color)
-topRow.grid(column="0", row = "0", pady="15", sticky=W)
-
-
-#EDL Frame
-
-edlFrame = tk.LabelFrame(mainFrame, text="Avid EDL (*.edl)", bg=background_color, width="100")
-edlFrame.grid(column="0", row = "1", sticky=N)
-
-# open_edl_btn = tk.Button(edlFrame, text="Pop-out EDL", command=lambda: popout_edlTxt(None))
-# open_edl_btn.pack(padx="5", side=LEFT)
-
-edlScroll_y = tk.Scrollbar(edlFrame)
-edlScroll_y.pack(side="right", fill="y")
-
-edlScroll_x = tk.Scrollbar(edlFrame, orient=HORIZONTAL)
-edlScroll_x.pack(side="bottom", fill="x")
-
-edlTxt = tk.Text(edlFrame, selectbackground="#ff9933", selectforeground="black", undo=True, wrap="none", yscrollcommand=edlScroll_y.set, xscrollcommand=edlScroll_x.set, height=textFrameHeight, width=textFrameWidth)
-edlTxt.pack(fill="both",expand=1, padx="5", pady="5")
-edlScroll_y.config(command=edlTxt.yview)
-edlScroll_x.config(command=edlTxt.xview)
+# ----------------- FILE CHECKER/QC FUNCTIONS -----------------
 
 
 
-#CML Frame
-cmlFrame = tk.LabelFrame(mainFrame, text="Vantage EDL (*.cml)", bg=background_color)
-cmlFrame.grid(column="1", row = "1", padx="15", sticky=N)
-
-# update_cml_btn = tk.Button(cmlFrame, text="Update CML", command=parse_edl)
-# update_cml_btn.pack(padx="5")
-
-cmlScroll_y = tk.Scrollbar(cmlFrame)
-cmlScroll_y.pack(side="right", fill="y")
-
-cmlScroll_x = tk.Scrollbar(cmlFrame, orient=HORIZONTAL)
-cmlScroll_x.pack(side="bottom", fill="x")
-
-cmlTxt = tk.Text(cmlFrame, selectbackground="#ff9933", selectforeground="black", undo=True, yscrollcommand=cmlScroll_y.set, wrap="none", xscrollcommand=cmlScroll_x.set, height=textFrameHeight, width=textFrameWidth)
-cmlTxt.pack(fill="both",expand=1, padx="5", pady="5")
-cmlScroll_y.config(command=cmlTxt.yview)
-cmlScroll_x.config(command=cmlTxt.xview)
+# ----------------- VIEWS GENERATOR FUNCTIONS -----------------
 
 
 
-#CSV Frame
-csvFrame = tk.LabelFrame(mainFrame, text="NewBlue Title Variables (*.csv)", bg=background_color)
-csvFrame.grid(column="2", row = "1", sticky=N,)
 
-csvTitlesFrame = tk.LabelFrame(csvFrame, text="Titles List", bg=background_color)
-csvTitlesFrame.pack(padx="15", pady="15", fill="x")
-
-csvTitlesList = tk.Label(csvTitlesFrame, text="", justify="left", bg=background_color, height=11, anchor=NW)
-csvTitlesList.pack(pady="5", side="left", fill=X)
-
-# update_csv_btn = tk.Button(csvFrame, text="Update CSV", command=generateCsv)
-# update_csv_btn.pack(padx="5", pady="5")
-
-csvScroll_y = tk.Scrollbar(csvFrame)
-csvScroll_y.pack(side="right", fill="y")
-
-csvScroll_x = tk.Scrollbar(csvFrame, orient=HORIZONTAL)
-csvScroll_x.pack(side="bottom", fill="x")
-
-csvTxt = tk.Text(csvFrame, selectbackground="#ff9933", selectforeground="black", undo=True, yscrollcommand=csvScroll_y.set, wrap="none", xscrollcommand=csvScroll_x.set, height=30, width=textFrameWidth)
-csvTxt.pack(fill="both",expand=1, padx="5", pady="5")
-csvScroll_y.config(command=csvTxt.yview)
-csvScroll_x.config(command=csvTxt.xview)
-#------------------------------
-
-
-# bottomRow = tk.Frame(mainFrame, bg=background_color)
-# bottomRow.pack(pady="10")
-
-
+# ----------------- GUI -----------------
 
 #GUI - Menu Bar
 menubar = tk.Menu(root)
@@ -585,8 +484,8 @@ filemenu.add_command (label="Exit        ", command=root.quit, accelerator ="Ctr
 
 editmenu = tk.Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Edit", menu=editmenu)
-editmenu.add_command (label="Undo", command=edlTxt.edit_undo, accelerator ="Ctrl+Z")
-editmenu.add_command (label="Redo", command=edlTxt.edit_redo, accelerator ="Ctrl+Y")
+editmenu.add_command (label="Undo", command=nothing, accelerator ="Ctrl+Z")
+#editmenu.add_command (label="Redo", command=edlTxt.edit_redo, accelerator ="Ctrl+Y")
 editmenu.add_separator()
 editmenu.add_command (label="Cut", command=nothing, accelerator ="Ctrl+X")
 editmenu.add_command (label="Copy", command=nothing, accelerator ="Ctrl+C")
@@ -605,7 +504,82 @@ helpmenu.add_command (label="GitHub Project", command=lambda: openLink(creditsPr
 helpmenu.add_separator()
 helpmenu.add_command (label="About", command=aboutPopup)
 
-# #GUI - Top buttons
+#Key Binding
+root.bind('<Control-Key-o>', open_file)
+root.bind('<Control-Key-O>', open_file)
+root.bind('<Control-Key-n>', new_file)
+root.bind('<Control-Key-N>', new_file)
+root.bind('<Control-Key-s>', save_files)
+root.bind('<Control-Key-S>', save_files)
+
+
+#Style Tabs
+style = ttk.Style()
+style.theme_create('Cloud', settings={
+    ".": {
+        "configure": {
+            "background": '#aeb0ce', # All colors except for active tab-button
+            "font": 'red'
+        }
+    },
+    "TNotebook": {
+        "configure": {
+            "background":background_color, # color behind the notebook
+            "tabmargins": [5, 5, 0, 0], # [left margin, upper margin, right margin, margin beetwen tab and frames]
+        }
+    },
+    "TNotebook.Tab": {
+        "configure": {
+            "background": 'white', # Color of non selected tab-button
+            "padding": [15, 5], # [space beetwen text and horizontal tab-button border, space between text and vertical tab_button border]
+            "font":"white"
+        },
+        "map": {
+            "background": [("selected", tabBG)], # Color of active tab
+            "expand": [("selected", [1, 1, 1, 0])] # [expanse of text]
+        }
+    }
+})
+style.theme_use('Cloud')
+
+
+
+
+
+
+#GUI ----------------- GLOBAL ELEMENTS -----------------
+
+#GUI - Root Container
+mainContainer = tk.Frame(root, bd="10", bg=background_color)
+mainContainer.pack(fill="both",expand=1)
+
+
+#GUI - Tabs
+mainFrame = ttk.Notebook(mainContainer)
+mainFrame.pack(padx=5, pady=5)
+
+tab_edl = Frame(mainFrame, width=1800, height=900, bg=tabBG)
+tab_edl.pack(fill="both", expand=1)
+
+tab_views = Frame(mainFrame, width=1800, height=900, bg=tabBG)
+tab_views.pack(fill="both", expand=1)
+
+#tab_qc = Frame(mainFrame, width=1800, height=900, bg=tabBG)
+#tab_qc.pack(fill="both", expand=1)
+
+mainFrame.add(tab_edl, text="EDL")
+#mainFrame.add(tab_qc, text="File Check")
+mainFrame.add(tab_views, text="Generate Views")
+
+
+
+
+#GUI ----------------- EDL PARCER -----------------
+
+#GUI EDL - Top buttons
+topRow = tk.Frame(tab_edl, bg=tabBG)
+topRow.grid(column="0", row = "0", pady="15", sticky=W)
+
 t_btn1 = tk.Button(topRow, text="Open EDL", command=lambda: open_file(None))
 t_btn2 = tk.Button(topRow, text="Update CSV/CML", command=parse_edl)
 t_btn3 = tk.Button(topRow, text="Save CSV/CML", command=lambda: save_files(None))
@@ -613,14 +587,81 @@ t_btn1.grid(row="0", column="1", padx="5")
 t_btn2.grid(row="0", column="2", padx="5")
 t_btn3.grid(row="0", column="3", padx="5")
 
-#GUI - Bottom buttons 1
-# b_btn1 = tk.Button(bottomRow, text="Button 1")
-# b_btn2 = tk.Button(bottomRow, text="Button 2")
-# b_btn3 = tk.Button(bottomRow, text="Button 3")
 
-# b_btn1.grid(row="0", column="0", padx="5")
-# b_btn2.grid(row="0", column="1", padx="5")
-# b_btn3.grid(row="0", column="2", padx="5")
+#EDL Frame
+edlFrame = tk.LabelFrame(tab_edl, text="Avid EDL (*.edl)", bg=tabBG)
+edlFrame.grid(column="0", row = "1", sticky=N, padx=5, pady=5)
+
+## open_edl_btn = tk.Button(edlFrame, text="Pop-out EDL", command=lambda: popout_edlTxt(None))
+## open_edl_btn.pack(padx="5", side=LEFT)
+
+edlScroll_y = tk.Scrollbar(edlFrame)
+edlScroll_y.pack(side="right", fill="y")
+
+edlScroll_x = tk.Scrollbar(edlFrame, orient=HORIZONTAL)
+edlScroll_x.pack(side="bottom", fill="x")
+
+edlTxt = tk.Text(edlFrame, selectbackground="#ff9933", selectforeground="black", undo=True, wrap="none", yscrollcommand=edlScroll_y.set, xscrollcommand=edlScroll_x.set, height=textFrameHeight, width=textFrameWidth)
+edlTxt.pack(fill="both",expand=1, padx="5", pady="5")
+edlScroll_y.config(command=edlTxt.yview)
+edlScroll_x.config(command=edlTxt.xview)
+
+
+##CML Frame
+cmlFrame = tk.LabelFrame(tab_edl, text="Vantage EDL (*.cml)", bg=tabBG)
+cmlFrame.grid(column="1", row = "1", padx="5", pady=5, sticky=N)
+
+# update_cml_btn = tk.Button(cmlFrame, text="Update CML", command=parse_edl)
+# update_cml_btn.pack(padx="5")
+
+cmlScroll_y = tk.Scrollbar(cmlFrame)
+cmlScroll_y.pack(side="right", fill="y")
+
+cmlScroll_x = tk.Scrollbar(cmlFrame, orient=HORIZONTAL)
+cmlScroll_x.pack(side="bottom", fill="x")
+
+cmlTxt = tk.Text(cmlFrame, selectbackground="#ff9933", selectforeground="black", undo=True, yscrollcommand=cmlScroll_y.set, wrap="none", xscrollcommand=cmlScroll_x.set, height=textFrameHeight, width=textFrameWidth)
+cmlTxt.pack(fill="both",expand=1, padx="5", pady="5")
+cmlScroll_y.config(command=cmlTxt.yview)
+cmlScroll_x.config(command=cmlTxt.xview)
+
+
+##CSV Frame
+csvFrame = tk.LabelFrame(tab_edl, text="NewBlue Title Variables (*.csv)", bg=tabBG)
+csvFrame.grid(column="2", row = "1", sticky=N, padx=5, pady=5)
+
+csvTitlesFrame = tk.LabelFrame(csvFrame, text="Titles List", bg=tabBG)
+csvTitlesFrame.pack(padx="5", pady="5", fill="x")
+
+csvTitlesList = tk.Label(csvTitlesFrame, text="", justify="left", bg=tabBG, height=11, anchor=NW)
+csvTitlesList.pack(pady="5", side="left", fill=X)
+
+# update_csv_btn = tk.Button(csvFrame, text="Update CSV", command=generateCsv)
+# update_csv_btn.pack(padx="5", pady="5")
+
+csvScroll_y = tk.Scrollbar(csvFrame)
+csvScroll_y.pack(side="right", fill="y")
+
+csvScroll_x = tk.Scrollbar(csvFrame, orient=HORIZONTAL)
+csvScroll_x.pack(side="bottom", fill="x")
+
+csvTxt = tk.Text(csvFrame, selectbackground="#ff9933", selectforeground="black", undo=True, yscrollcommand=csvScroll_y.set, wrap="none", xscrollcommand=csvScroll_x.set, height=32, width=textFrameWidth)
+csvTxt.pack(fill="both",expand=1, padx="5", pady="5")
+csvScroll_y.config(command=csvTxt.yview)
+csvScroll_x.config(command=csvTxt.xview)
+#------------------------------
+
+
+## bottomRow = tk.Frame(mainFrame, bg=background_color)
+## bottomRow.pack(pady="10")
+
+
+#GUI ----------------- FILES CHECKER - QC -----------------
+
+#GUI ----------------- GENERATE VIEWS -----------------
+
+
+
 
 root.config (menu=menubar)
 root.mainloop()
