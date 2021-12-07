@@ -6,3 +6,5 @@
 *.csv
 *.edl
 *.spec
+tab.py
+edl_24p.py

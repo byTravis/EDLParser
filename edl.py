@@ -1,4 +1,3 @@
-#Dissolves Branch
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
@@ -10,7 +9,7 @@ import webbrowser
 #credits info
 creditsTitle = "EDL Parcer for Vantage"
 creditsAuthor = "Travis"
-creditsVersion ="v2.1"
+creditsVersion ="v2.2"
 creditsDate="1/28/2021"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "https://github.com/byTravis/EDLParser/wiki"
@@ -415,9 +414,21 @@ def generateCsv():
 	csvTitlesList.config(text=titleList)
 
 
+
+#Pop-Outs
+def popout_edlTxt():
+	return
+
+
+
+
+
+
+
+
+
 	
 #Saving CML and CSV
-
 def save_files(nothing):
 	csv_file = cur_dir + "\\" + file_name + ".csv"
 	cml_file = cur_dir + "\\" + file_name + ".cml"
@@ -495,8 +506,8 @@ topRow.grid(column="0", row = "0", pady="15", sticky=W)
 edlFrame = tk.LabelFrame(mainFrame, text="Avid EDL (*.edl)", bg=background_color, width="100")
 edlFrame.grid(column="0", row = "1", sticky=N)
 
-# open_edl_btn = tk.Button(edlFrame, text="Open EDL", command=lambda: open_file(None))
-# open_edl_btn.pack(padx="5")
+# open_edl_btn = tk.Button(edlFrame, text="Pop-out EDL", command=lambda: popout_edlTxt(None))
+# open_edl_btn.pack(padx="5", side=LEFT)
 
 edlScroll_y = tk.Scrollbar(edlFrame)
 edlScroll_y.pack(side="right", fill="y")
