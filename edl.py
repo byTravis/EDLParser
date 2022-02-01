@@ -792,7 +792,7 @@ def saveViewsCSV(viewsData):
 def buttonStates():
 	t_btn2['state'] = tk.DISABLED
 	t_btn3['state'] = tk.DISABLED
-	viewsExport['state'] = tk.DISABLED
+	#viewsExport['state'] = tk.DISABLED
 
 	checkEDL = edlTxt.get("1.0", "end")
 	checkViewsMeta = viewsTitleEntry.get()
@@ -804,13 +804,9 @@ def buttonStates():
 		t_btn2['state'] = tk.NORMAL
 		t_btn3['state'] = tk.NORMAL
 	
-	if viewsLength != 0:
-		viewsExport['state'] = tk.NORMAL
+	#if viewsLength != 0:
+	#	viewsExport['state'] = tk.NORMAL
 
-
-	
-	
-		
 
 #GUI - Menu Bar
 menubar = tk.Menu(root)
@@ -1079,7 +1075,7 @@ viewsSDCheck.grid(row=0, column=1, sticky=W, padx=10)
 viewsCCRadio.grid(row=1, column=1, sticky=W, padx=30)
 viewsLBRadio.grid(row=2, column=1, sticky=W, padx=30)
 
-viewsExport = tk.Button(viewsOptionsFrame, text="Export Views CSV", command=generateViewsCSV, state = DISABLED)
+viewsExport = tk.Button(viewsOptionsFrame, text="Export Views CSV", command=generateViewsCSV, state = NORMAL)
 
 viewsWiredriveDisclaimerLabel = tk.Label(viewsOptionsFrame, text="* Wiredrive views will always be HD MP4.", bg=tabBG)
 
