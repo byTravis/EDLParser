@@ -11,7 +11,7 @@ import webbrowser
 creditsTitle = "EDL Parcer for Vantage"
 creditsAuthor = "Travis"
 creditsVersion ="v3.0"
-creditsDate="1/28/2021"
+creditsDate="2/1/2021"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "https://github.com/byTravis/EDLParser/wiki"
 
