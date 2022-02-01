@@ -4,4 +4,4 @@
 
 
 ### Version Description:
-**02/01/2022 - v3.1** - Added functionality to Views Tab.  Parses and creates CSV for views.  Set button states.
+**v3.1 - 02/01/2022** - Added functionality to Views Tab.  Parses and creates CSV for views.  Set button states.
