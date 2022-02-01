@@ -13,7 +13,7 @@ import csv
 creditsTitle = "EDL Parser for Vantage"
 creditsAuthor = "Travis"
 creditsVersion ="v3.1"
-creditsDate="1/31/2022"
+creditsDate="2/1/2022"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "http://sharepoint.portland.local/pw/Duplication%20Editors%20Handbook/EDL%20Parser.aspx"
 
