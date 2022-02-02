@@ -12,15 +12,15 @@ import csv
 #credits info
 creditsTitle = "EDL Parser for Vantage"
 creditsAuthor = "Travis"
-creditsVersion ="v3.1"
-creditsDate="2/1/2022"
+creditsVersion ="v3.2"
+creditsDate="2/2/2022"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "http://sharepoint.portland.local/pw/Duplication%20Editors%20Handbook/EDL%20Parser.aspx"
 
-#Variable Names for VANTAGE - These are the variables used in Vantage.
+#Variable Names for VANTAGE - These are the variables used in Vantage for customizing. - Note:  slate variables are hardcoded in CML section
 vantage_tfn = "Workflow_TFN"
 vantage_url = "Workflow_URL"
-vantage_promo = "Workorder_Promo"
+vantage_promo = "Workflow_Promo"
 vantage_source_path = "Workflow_SupportingFilesPath"
 vantage_master_name = "Workflow_Master"
 
@@ -62,7 +62,7 @@ viewsExportState = DISABLED
 #Setting Up GUI
 root = tk.Tk()
 root.title(creditsTitle)
-# root.iconbitmap('C:/Users/Nicole/Desktop/Python-Travis/EDLParser/sources/pw.ico')
+root.iconbitmap('./sources/pw.ico')
 root.geometry ("1800x900+40+40")
 
 #placeholder for functions
@@ -279,17 +279,17 @@ def generateCml(cmlItems):
 			</Title>
 		
 			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-				{$$Workflow_TFN} 
+				{$$Workflow_Slate_TFN} 
 				<Area left="715px" right="1610px" top="730px"  />
 			</Title>
 		
 			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-				{$$Workflow_URL} 
+				{$$Workflow_Slate_URL} 
 				<Area left="715px" right="1610px" top="785px"  />
 			</Title>
 					
 			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-				{$$Workorder_Promo} 
+				{$$Workflow_Slate_Promo} 
 				<Area left="715px"  right="1610px" top="840px" />
 			</Title>			
 
