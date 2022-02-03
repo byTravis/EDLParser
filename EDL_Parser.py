@@ -12,8 +12,8 @@ import csv
 #credits info
 creditsTitle = "EDL Parser for Vantage"
 creditsAuthor = "Travis"
-creditsVersion ="v3.3"
-creditsDate="2/2/2022"
+creditsVersion ="v3.4"
+creditsDate="2/3/2022"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "http://sharepoint.portland.local/pw/Duplication%20Editors%20Handbook/EDL%20Parser.aspx"
 
@@ -730,6 +730,9 @@ def customizedViews(viewsBase, viewsCustomized, viewsCodec, viewsData):
 def genericViews(viewsBase, viewsCustomized, viewsCodec, viewsData):
 	viewsRow = []
 	genericData = viewsCustomized[0].copy()
+	baseISCI = viewsBase[5]
+
+	genericData[0] = baseISCI
 
 	print("Generic")
 
