@@ -12,7 +12,7 @@ import csv
 #credits info
 creditsTitle = "EDL Parser for Vantage"
 creditsAuthor = "Travis"
-creditsVersion ="v3.2"
+creditsVersion ="v3.3"
 creditsDate="2/2/2022"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "http://sharepoint.portland.local/pw/Duplication%20Editors%20Handbook/EDL%20Parser.aspx"
@@ -29,7 +29,7 @@ viewsHeader = ["StationID ", "Title ", "Agency ", "Client ", "Date ", "Length ",
 viewsMOV = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MOV', '00:59:53;00', 'Yes', 'FALSE', '1280', '720', 'Progressive', 'Native', '50000000', 'Special - View', 'Main']
 viewsWMV = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'WMV', '00:59:53;00', 'Yes', 'FALSE', '960', '540', 'Progressive', '29.97', '3000000', 'Special - View', 'Main']
 viewsMP4 = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MP4', '00:59:53;00', 'Yes', 'FALSE', '1280', '720', 'Progressive', 'Native', '50000000', 'Special - View', 'Main']
-viewsWiredrive = ['00:00:00;00', '00:00:00;00', '00:00:00;00', 'MP4', '01:00:00;00', 'Yes', 'FALSE', '1920', '1080', 'Progressive', '29.97', '5500000', 'H.264', 'Main']
+viewsWiredrive = ['00:00:00;00', '00:00:00;00', '00:00:00;00', 'MP4', '01:00:00;00', 'Yes', 'FALSE', '1920', '1080', 'Progressive', '29.97', '5500000', 'Special - View', 'Main']
 viewsMOV_SD = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MOV', '00:59:53;00', 'Yes', 'FALSE', '640', '480', 'Progressive', 'Native', '50000000', 'Special - View', 'Main']
 viewsWMV_SD = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'WMV', '00:59:53;00', 'Yes', 'FALSE', '640', '480', 'Progressive', '29.97', '1500000', 'Special - View', 'Main' ]
 viewsMP4_SD = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MP4', '00:59:53;00', 'Yes', 'FALSE', '640', '480', 'Progressive', 'Native', '50000000', 'Special - View', 'Main']
@@ -62,7 +62,7 @@ viewsExportState = DISABLED
 #Setting Up GUI
 root = tk.Tk()
 root.title(creditsTitle)
-root.iconbitmap('./sources/pw.ico')
+root.iconbitmap('./sources/edlicon.ico')
 root.geometry ("1800x900+40+40")
 
 #placeholder for functions
@@ -89,6 +89,7 @@ def new_file(x):
 #Open File
 def open_file(x): 	
 	global cur_dir
+	global file_name
 	new_file(x)
 	#global file_name
 	#file_name = ""
@@ -452,7 +453,7 @@ def save_files(nothing):
 	cml_file = cur_dir + "\\" + file_name + ".cml"
 
 	if os.path.isfile(csv_file) or os.path.isfile(cml_file):
-				overwrite_files(csv_file, cml_file)
+		overwrite_files(csv_file, cml_file)
 	else:
 		csv_file = open(csv_file, 'w')
 		csv_file.write(csvTxt.get(1.0, END))
@@ -728,7 +729,13 @@ def customizedViews(viewsBase, viewsCustomized, viewsCodec, viewsData):
 # Generate Generic Views
 def genericViews(viewsBase, viewsCustomized, viewsCodec, viewsData):
 	viewsRow = []
-	genericData = viewsCustomized[0]
+	genericData = viewsCustomized[0].copy()
+
+	print("Generic")
+
+	print(viewsCustomized)
+	print(genericData)
+
 	viewsRow.append("Generic")
 
 	
@@ -749,14 +756,21 @@ def genericViews(viewsBase, viewsCustomized, viewsCodec, viewsData):
 		viewsRow.append(f)
 	for g in viewsCodec:
 		viewsRow.append(g)
+	
 	viewsData.append(viewsRow)
 	viewsRow=[]
+
+	print("Generic Post Processing")
+	print(viewsCustomized)
+	print(genericData)
 
 
 # Generate Wiredrive Views
 def wiredriveViews(viewsBase, viewsCustomized, viewsData):
 	viewsRow = []
 	viewsRow.append("Wiredrive")
+	#print("Wiredrive")
+	#print(viewsCustomized)
 	for e in viewsBase:
 		viewsRow.append(e)
 	for f in viewsCustomized[0]:
