@@ -10,29 +10,30 @@ import csv
 
 #----------------- GLOBAL VARIABLES -----------------
 #credits info
-creditsTitle = "EDL Parser for Vantage"
+creditsTitle = "Editor Toolkit - Production West"
 creditsAuthor = "Travis"
-creditsVersion ="v3.1"
-creditsDate="2/1/2022"
+creditsVersion ="v3.9"
+creditsDate="1/2/2024"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
-creditsDocumentation = "http://sharepoint.portland.local/pw/Duplication%20Editors%20Handbook/EDL%20Parser.aspx"
+creditsDocumentation = "https://rainforgrowth.sharepoint.com/sites/pw/Duplication%20Editors%20Handbook/Editor%20Toolkit.aspx"
 
-#Variable Names for VANTAGE - These are the variables used in Vantage.
+#Variable Names for VANTAGE - These are the variables used in Vantage for customizing. - Note:  slate variables are hardcoded in CML section
 vantage_tfn = "Workflow_TFN"
 vantage_url = "Workflow_URL"
-vantage_promo = "Workorder_Promo"
+vantage_promo = "Workflow_Promo"
 vantage_source_path = "Workflow_SupportingFilesPath"
 vantage_master_name = "Workflow_Master"
 
 #CODEC Variables for Views Generator  ['slate', 'blackHead', 'blackTail', 'Format', 'StartTime', 'CenterCut Safe', 'Closed Captioning', 'Width', 'Height', 'Interlacing', 'Framerate', 'BitRate', 'CODEC', 'Profile' ]
-viewsHeader = ["StationID ", "Title ", "Agency ", "Client ", "Date ", "Length ", "BaseISCI ", "SlatedISCI ", "TFN ", "URL ", "PROMO ", "SlateLength ", "BlackHead ", "BlackTail ", "Format ", "StartTimeCode ", "CentercutSafe ", "ClosedCaptioned ", "VideoWidth ", "VideoHeight ", "InterlaceMode ", "FrameRate ", "BitRate ", "Codec ", "Profile"]
-viewsMOV = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MOV', '00:59:53;00', 'Yes', 'FALSE', '1280', '720', 'Progressive', 'Native', '50000000', 'Special - View', 'Main']
-viewsWMV = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'WMV', '00:59:53;00', 'Yes', 'FALSE', '960', '540', 'Progressive', '29.97', '3000000', 'Special - View', 'Main']
-viewsMP4 = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MP4', '00:59:53;00', 'Yes', 'FALSE', '1280', '720', 'Progressive', 'Native', '50000000', 'Special - View', 'Main']
-viewsWiredrive = ['00:00:00;00', '00:00:00;00', '00:00:00;00', 'MP4', '01:00:00;00', 'Yes', 'FALSE', '1920', '1080', 'Progressive', '29.97', '5500000', 'H.264', 'Main']
-viewsMOV_SD = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MOV', '00:59:53;00', 'Yes', 'FALSE', '640', '480', 'Progressive', 'Native', '50000000', 'Special - View', 'Main']
-viewsWMV_SD = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'WMV', '00:59:53;00', 'Yes', 'FALSE', '640', '480', 'Progressive', '29.97', '1500000', 'Special - View', 'Main' ]
-viewsMP4_SD = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MP4', '00:59:53;00', 'Yes', 'FALSE', '640', '480', 'Progressive', 'Native', '50000000', 'Special - View', 'Main']
+viewsHeader = ["StationID ", "Title ", "Agency ", "Client ", "Date ", "Length ", "BaseISCI ", "SlatedISCI ", "TFN ", "URL ", "PROMO ", "SlateLength ", "BlackHead ", "BlackTail ", "Format ", "StartTimeCode ", "CentercutSafe ", "ClosedCaptioned ", "VideoWidth ", "VideoHeight ", "InterlaceMode ", "FrameRate ", "BitRate ", "Codec ", "Profile", "VO"]
+viewsMOV = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MOV', '00:59:53;00', 'Yes', 'FALSE', '1280', '720', 'Progressive', 'Native', '50000000', 'Special - View', 'Main', 'FALSE']
+viewsWMV = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'WMV', '00:59:53;00', 'Yes', 'FALSE', '960', '540', 'Progressive', '29.97', '3000000', 'Special - View', 'Main', 'FALSE']
+viewsMP4 = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MP4', '00:59:53;00', 'Yes', 'FALSE', '1280', '720', 'Progressive', 'Native', '50000000', 'Special - View', 'Main', 'FALSE']
+viewsWiredrive = ['00:00:00;00', '00:00:00;00', '00:00:00;00', 'MP4', '01:00:00;00', 'Yes', 'FALSE', '1920', '1080', 'Progressive', '29.97', '5500000', 'Special - View', 'Main', 'FALSE']
+viewsAvid = ['00:00:00;00', '00:00:00;00', '00:00:00;00', 'MOV', '01:00:00;00', 'Yes', 'FALSE', '1920', '1080', 'Progressive', '29.97', '220000000', 'DNxHD', 'High', 'False']
+viewsMOV_SD = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MOV', '00:59:53;00', 'Yes', 'FALSE', '640', '480', 'Progressive', 'Native', '50000000', 'Special - View', 'Main', 'FALSE']
+viewsWMV_SD = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'WMV', '00:59:53;00', 'Yes', 'FALSE', '640', '480', 'Progressive', '29.97', '1500000', 'Special - View', 'Main', 'FALSE']
+viewsMP4_SD = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MP4', '00:59:53;00', 'Yes', 'FALSE', '640', '480', 'Progressive', 'Native', '50000000', 'Special - View', 'Main', 'FALSE']
 
 
 #Global Variables
@@ -47,11 +48,15 @@ hourMark = "01:00:00:00"  #one hour mark where first frame of action of video ha
 dissolveOffset = "00:00:00:01"  #this compensates for the fade in Vantage.  Vantage treats a fade where first frame is 0% opacity and the last frame is 100% opacity.  Avid treats the first & last frame as showing some of the video.  This cheats that look so first or last frame isn't blank.
 
 
-#GUI Elements
-background_color = "gray"
+#GUI Elements - Dark Turquise #118cab - Light Turquise = #96d3e2 - dark gray #525252
+background_color = "#525252"
+buttonColor = "#f0f0f0"
+buttonText = "black"
+buttonHighlight = "#96d3e2"
+buttonHighlightText = "black"
 tabBG = "#e6e6ff"
-textFrameWidth="68"
-textFrameHeight="45"
+ColumnWidth="65"
+ColumnHeight="42"
 
 #ButtonStates
 edlUpdateState = DISABLED
@@ -62,8 +67,8 @@ viewsExportState = DISABLED
 #Setting Up GUI
 root = tk.Tk()
 root.title(creditsTitle)
-# root.iconbitmap('C:/Users/Nicole/Desktop/Python-Travis/EDLParser/sources/pw.ico')
-root.geometry ("1800x900+40+40")
+root.iconbitmap('./sources/edlicon.ico')
+root.geometry ("1300x900+0+0")
 
 #placeholder for functions
 def nothing():
@@ -89,6 +94,7 @@ def new_file(x):
 #Open File
 def open_file(x): 	
 	global cur_dir
+	global file_name
 	new_file(x)
 	#global file_name
 	#file_name = ""
@@ -279,17 +285,17 @@ def generateCml(cmlItems):
 			</Title>
 		
 			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-				{$$Workflow_TFN} 
+				{$$Workflow_Slate_TFN} 
 				<Area left="715px" right="1610px" top="730px"  />
 			</Title>
 		
 			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-				{$$Workflow_URL} 
+				{$$Workflow_Slate_URL} 
 				<Area left="715px" right="1610px" top="785px"  />
 			</Title>
 					
 			<Title align="head" adjust="edge" fill="none" layer="1" duration="{$$SlateLengthTimecode}"  font="Trebuchet MS" size="42pt" weight="normal" foreground-color="FF525255" background-color="transparent" wrap="true" horizontal-align="left" overflow="resize" layout="stretch"> 
-				{$$Workorder_Promo} 
+				{$$Workflow_Slate_Promo} 
 				<Area left="715px"  right="1610px" top="840px" />
 			</Title>			
 
@@ -452,7 +458,7 @@ def save_files(nothing):
 	cml_file = cur_dir + "\\" + file_name + ".cml"
 
 	if os.path.isfile(csv_file) or os.path.isfile(cml_file):
-				overwrite_files(csv_file, cml_file)
+		overwrite_files(csv_file, cml_file)
 	else:
 		csv_file = open(csv_file, 'w')
 		csv_file.write(csvTxt.get(1.0, END))
@@ -492,6 +498,29 @@ def aboutPopup():
 
 # ----------------- VIEWS GENERATOR FUNCTIONS -----------------
 
+#Views Options - Reset
+def resetViewsOptions():
+	viewsCustomizedCheck.select()
+
+	viewsGenericCheck.select()
+	viewsGenericURLCheck.select()
+	viewsGenericTFNCheck.deselect()
+	viewsGenericPromoCheck.deselect()
+
+	viewsWiredriveCheck.select()
+
+	viewsMOVRadio.select()
+	
+	viewsSDCheck.deselect()
+	viewsCCRadio.select()
+
+	viewsAvidCheck.deselect()
+	viewsAvidCaptionsCheck.deselect()
+
+
+
+
+
  #Opens and Parses CSV
 def openViewsCSV(): 
 	clearViewsCSV()
@@ -499,7 +528,7 @@ def openViewsCSV():
 	viewsBase = []
 	viewsCustomized = []
 	count = 0
-	viewsCSVParse = filedialog.askopenfilename(initialdir=cur_dir, title="Open Comcast CSV", filetypes=(("CSV", "*.csv"),))	 	
+	viewsCSVParse = filedialog.askopenfilename(initialdir=cur_dir, title="Import Metadata", filetypes=(("CSV", "*.csv"),))	 	
 	cur_dir = os.path.split(viewsCSVParse)[0]																				 
 
 	if viewsCSVParse != "" :
@@ -605,37 +634,44 @@ def displayViewsCSV(viewsBase, viewsCustomized):
 
 	#Get Generate views CSV
 def generateViewsCSV():
-	viewsBase = []
-	viewsCustomized = []
-	viewsCodec = ["not assigned"]
-	viewsData = []
-
-	if viewsSDStatus.get():	#Sets codec if HD or SD
-		if viewsType.get() == "MOV":
-			viewsCodec = viewsMOV_SD
-		elif viewsType.get() == "WMV":
-			viewsCodec = viewsWMV_SD
-		elif viewsType.get() == "MP4":
-			viewsCodec = viewsMP4_SD
-	else:
-		if viewsType.get() == "MOV":
-			viewsCodec = viewsMOV
-		elif viewsType.get() == "WMV":
-			viewsCodec = viewsWMV
-		elif viewsType.get() == "MP4":
-			viewsCodec = viewsMP4
-
-	getViewsMeta(viewsBase, viewsCustomized)  #pulls metadata from entry fields
-	viewsDownconvert(viewsBase, viewsCustomized, viewsCodec)					#Checks for downconvert
-
-	if viewsCustomizedStatus.get():												#customized views
-		customizedViews(viewsBase, viewsCustomized, viewsCodec, viewsData)	
-	if viewsGenericStatus.get():												#generic
-		genericViews(viewsBase, viewsCustomized, viewsCodec, viewsData)			
-	if viewsWiredriveStatus.get():												#wiredrive views
-		wiredriveViews(viewsBase, viewsCustomized, viewsData)
+	if viewsTitleEntry.get() and viewsAgencyEntry.get() and viewsClientEntry.get() and viewsDateEntry.get() and viewsTRTEntry.get() and viewsBaseISCIEntry.get(): 
 	
-	saveViewsCSV(viewsData)
+		viewsBase = []
+		viewsCustomized = []
+		viewsCodec = []
+		viewsData = []
+
+		if viewsSDStatus.get():	#Sets codec if HD or SD
+			if viewsType.get() == "MOV":
+				viewsCodec = viewsMOV_SD
+			elif viewsType.get() == "WMV":
+				viewsCodec = viewsWMV_SD
+			elif viewsType.get() == "MP4":
+				viewsCodec = viewsMP4_SD
+		else:
+			if viewsType.get() == "MOV":
+				viewsCodec = viewsMOV
+			elif viewsType.get() == "WMV":
+				viewsCodec = viewsWMV
+			elif viewsType.get() == "MP4":
+				viewsCodec = viewsMP4
+
+		getViewsMeta(viewsBase, viewsCustomized)  #pulls metadata from entry fields
+		viewsDownconvert(viewsBase, viewsCustomized, viewsCodec)					#Checks for downconvert
+
+		if viewsCustomizedStatus.get():												#customized views
+			customizedViews(viewsBase, viewsCustomized, viewsCodec, viewsData)	
+		if viewsGenericStatus.get():												#generic
+			genericViews(viewsBase, viewsCustomized, viewsCodec, viewsData)			
+		if viewsWiredriveStatus.get():												#wiredrive views
+			wiredriveViews(viewsBase, viewsCustomized, viewsData)
+
+		if viewsAvidStatus.get():												#Avid import views
+			avidViews(viewsBase, viewsCustomized, viewsData)
+	
+		saveViewsCSV(viewsData)
+	else:
+		messagebox.showwarning(title="Missing Metadata", message="Warning:  You are missing some basic metadata. \n\nMinimum Required:  \nTitle, Agency, Client, Date, TRT, Base ISCI, & Slated ISCI.")
 
 
 
@@ -727,8 +763,18 @@ def customizedViews(viewsBase, viewsCustomized, viewsCodec, viewsData):
 
 # Generate Generic Views
 def genericViews(viewsBase, viewsCustomized, viewsCodec, viewsData):
+	
 	viewsRow = []
-	genericData = viewsCustomized[0]
+	genericData = viewsCustomized[0].copy()
+	baseISCI = viewsBase[5]
+
+	genericData[0] = baseISCI
+
+	print("Generic")
+
+	print(viewsCustomized)
+	print(genericData)
+
 	viewsRow.append("Generic")
 
 	
@@ -737,7 +783,7 @@ def genericViews(viewsBase, viewsCustomized, viewsCodec, viewsData):
 	if viewsGenericTFNStatus.get() == False:
 		genericData[1] = "generic"
 	if viewsGenericPomoStatus.get() == False:
-		if genericData[3] != " ":
+		if genericData[3] != " " and genericData[3] != "":
 			genericData[3] = "generic"
 
 	
@@ -749,14 +795,21 @@ def genericViews(viewsBase, viewsCustomized, viewsCodec, viewsData):
 		viewsRow.append(f)
 	for g in viewsCodec:
 		viewsRow.append(g)
+	
 	viewsData.append(viewsRow)
 	viewsRow=[]
+
+	print("Generic Post Processing")
+	print(viewsCustomized)
+	print(genericData)
 
 
 # Generate Wiredrive Views
 def wiredriveViews(viewsBase, viewsCustomized, viewsData):
 	viewsRow = []
 	viewsRow.append("Wiredrive")
+	#print("Wiredrive")
+	#print(viewsCustomized)
 	for e in viewsBase:
 		viewsRow.append(e)
 	for f in viewsCustomized[0]:
@@ -768,6 +821,25 @@ def wiredriveViews(viewsBase, viewsCustomized, viewsData):
 	viewsData.append(viewsRow)
 	viewsRow=[]
 
+
+
+# Generate Avid Import Views
+def avidViews(viewsBase, viewsCustomized, viewsData):
+	viewsRow = []
+	viewsRow.append("VantageQC")
+	if viewsAvidCaptionsStatus.get() == True:
+		print("captions are true")
+		viewsAvid[6] = "TRUE"
+	for e in viewsBase:
+		viewsRow.append(e)
+	for f in viewsCustomized[0]:
+		if f == " ":
+			f=""
+		viewsRow.append(f)
+	for g in viewsAvid:
+		viewsRow.append(g)
+	viewsData.append(viewsRow)
+	viewsRow=[]
 
 
 
@@ -896,35 +968,53 @@ mainFrame.pack(padx=5, pady=5)
 
 tab_edl = Frame(mainFrame, width=1800, height=900, bg=tabBG)
 tab_edl.pack(fill="both", expand=1)
-
-tab_views = Frame(mainFrame, width=1800, height=900, bg=tabBG)
-tab_views.pack(fill="both", expand=1)
+mainFrame.add(tab_edl, text="EDL")
 
 #tab_qc = Frame(mainFrame, width=1800, height=900, bg=tabBG)
 #tab_qc.pack(fill="both", expand=1)
+#mainFrame.add(tab_qc, text="QC")
 
-mainFrame.add(tab_edl, text="EDL")
-#mainFrame.add(tab_qc, text="File Check")
-mainFrame.add(tab_views, text="Generate Views")
+tab_views = Frame(mainFrame, width=1800, height=900, bg=tabBG)
+tab_views.pack(fill="both", expand=1)
+mainFrame.add(tab_views, text="Views")
+
+
+
+
+
+
 
 
 
 
 #GUI ----------------- EDL PARCER -----------------
 
+#EDL Columns
+
+edlColumn1 =Frame(tab_edl, width=ColumnWidth, height=ColumnHeight, highlightbackground="red", highlightthickness=0, bg=tabBG)
+edlColumn1.grid(row=1, column=0, padx=5, pady=5, sticky=NW)
+
+edlColumn2 =Frame(tab_edl, width=ColumnWidth, height=ColumnHeight, highlightbackground="red", highlightthickness=0,bg=tabBG)
+edlColumn2.grid(row=1, column=1, padx=5, pady=5, sticky=NW)
+
+
 #GUI EDL - Top buttons
 topRow = tk.Frame(tab_edl, bg=tabBG)
 topRow.grid(column="0", row = "0", pady="15", sticky=W)
-t_btn1 = tk.Button(topRow, text="Open EDL", command=lambda: open_file(None))
-t_btn2 = tk.Button(topRow, text="Update CSV/CML", command=parse_edl, state = DISABLED)
-t_btn3 = tk.Button(topRow, text="Save CML/CSV", command=lambda: save_files(None), state = DISABLED)
+t_btn1 = tk.Button(topRow, text="Open EDL", command=lambda: open_file(None), bg=buttonColor, fg=buttonText)
+t_btn2 = tk.Button(topRow, text="Update CML/CSV", command=parse_edl, state = DISABLED, bg=buttonColor, fg=buttonText)
+t_btn3 = tk.Button(topRow, text="Save CML/CSV", command=lambda: save_files(None), state = DISABLED, bg=buttonHighlight, fg=buttonHighlightText)
 t_btn1.grid(row="0", column="1", padx="5")
 t_btn2.grid(row="0", column="2", padx="5")
 t_btn3.grid(row="0", column="3", padx="5")
 
 
+
+
+
+
 #EDL Frame
-edlFrame = tk.LabelFrame(tab_edl, text="Avid EDL (*.edl)", bg=tabBG)
+edlFrame = tk.LabelFrame(edlColumn1, text="Avid EDL (*.edl)", bg=tabBG)
 edlFrame.grid(column="0", row = "1", sticky=N, padx=5, pady=5)
 
 ## open_edl_btn = tk.Button(edlFrame, text="Pop-out EDL", command=lambda: popout_edlTxt(None))
@@ -936,15 +1026,23 @@ edlScroll_y.pack(side="right", fill="y")
 edlScroll_x = tk.Scrollbar(edlFrame, orient=HORIZONTAL)
 edlScroll_x.pack(side="bottom", fill="x")
 
-edlTxt = tk.Text(edlFrame, selectbackground="#ff9933", selectforeground="black", undo=True, wrap="none", yscrollcommand=edlScroll_y.set, xscrollcommand=edlScroll_x.set, height=textFrameHeight, width=textFrameWidth)
+edlTxt = tk.Text(edlFrame, selectbackground="#ff9933", selectforeground="black", undo=True, wrap="none", yscrollcommand=edlScroll_y.set, xscrollcommand=edlScroll_x.set, height="42")
 edlTxt.pack(fill="both",expand=1, padx="5", pady="5")
 edlScroll_y.config(command=edlTxt.yview)
 edlScroll_x.config(command=edlTxt.xview)
 
 
+
+
+
+
+
+
+
+
 ##CML Frame
-cmlFrame = tk.LabelFrame(tab_edl, text="Vantage EDL (*.cml)", bg=tabBG)
-cmlFrame.grid(column="1", row = "1", padx="5", pady=5, sticky=N)
+cmlFrame = tk.LabelFrame(edlColumn2, text="Vantage EDL (*.cml)", bg=tabBG)
+cmlFrame.grid(column="1", row = "1", padx="5", pady="5", sticky=N)
 
 # update_cml_btn = tk.Button(cmlFrame, text="Update CML", command=parse_edl)
 # update_cml_btn.pack(padx="5")
@@ -955,20 +1053,21 @@ cmlScroll_y.pack(side="right", fill="y")
 cmlScroll_x = tk.Scrollbar(cmlFrame, orient=HORIZONTAL)
 cmlScroll_x.pack(side="bottom", fill="x")
 
-cmlTxt = tk.Text(cmlFrame, selectbackground="#ff9933", selectforeground="black", undo=True, yscrollcommand=cmlScroll_y.set, wrap="none", xscrollcommand=cmlScroll_x.set, height=textFrameHeight, width=textFrameWidth)
+cmlTxt = tk.Text(cmlFrame, selectbackground="#ff9933", selectforeground="black", undo=True, yscrollcommand=cmlScroll_y.set, wrap="none", xscrollcommand=cmlScroll_x.set, height="20", width=ColumnWidth)
 cmlTxt.pack(fill="both",expand=1, padx="5", pady="5")
 cmlScroll_y.config(command=cmlTxt.yview)
 cmlScroll_x.config(command=cmlTxt.xview)
 
 
 ##CSV Frame
-csvFrame = tk.LabelFrame(tab_edl, text="NewBlue Title Variables (*.csv)", bg=tabBG)
-csvFrame.grid(column="2", row = "1", sticky=N, padx=5, pady=5)
+csvFrame = tk.LabelFrame(edlColumn2, text="NewBlue Title Variables (*.csv)", bg=tabBG)
+csvFrame.grid(column="1", row = "2", sticky=N, padx=5, pady=5)
+
 
 csvTitlesFrame = tk.LabelFrame(csvFrame, text="Titles List", bg=tabBG)
 csvTitlesFrame.pack(padx="5", pady="5", fill="x")
 
-csvTitlesList = tk.Label(csvTitlesFrame, text="", justify="left", bg=tabBG, height=11, anchor=NW)
+csvTitlesList = tk.Label(csvTitlesFrame, text="", justify="left", bg=tabBG, height=6, anchor=NW)
 csvTitlesList.pack(pady="5", side="left", fill=X)
 
 # update_csv_btn = tk.Button(csvFrame, text="Update CSV", command=generateCsv)
@@ -980,7 +1079,7 @@ csvScroll_y.pack(side="right", fill="y")
 csvScroll_x = tk.Scrollbar(csvFrame, orient=HORIZONTAL)
 csvScroll_x.pack(side="bottom", fill="x")
 
-csvTxt = tk.Text(csvFrame, selectbackground="#ff9933", selectforeground="black", undo=True, yscrollcommand=csvScroll_y.set, wrap="none", xscrollcommand=csvScroll_x.set, height=32, width=textFrameWidth)
+csvTxt = tk.Text(csvFrame, selectbackground="#ff9933", selectforeground="black", undo=True, yscrollcommand=csvScroll_y.set, wrap="none", xscrollcommand=csvScroll_x.set, height=10, width=ColumnWidth)
 csvTxt.pack(fill="both",expand=1, padx="5", pady="5")
 csvScroll_y.config(command=csvTxt.yview)
 csvScroll_x.config(command=csvTxt.xview)
@@ -991,96 +1090,162 @@ csvScroll_x.config(command=csvTxt.xview)
 ## bottomRow.pack(pady="10")
 
 
+
+
+
+
+
+
+
 #GUI ----------------- FILES CHECKER - QC -----------------
+
+# Define Variables
+
+
+
+
+
+
 
 #GUI ----------------- GENERATE VIEWS -----------------
 
+# Define Variables
 viewsType = StringVar()
 SDDownconvert = StringVar()
 SDType = StringVar()
-
-
-
-#View Options Frame
-
-viewsOptionsFrame = tk.LabelFrame(tab_views, text="Options", bg=tabBG)
-viewsOptionsFrame.grid(column="1", row = "0", sticky=NW, padx=0, pady=20)
-
-viewsTypeFrame = tk.LabelFrame(viewsOptionsFrame, text="View Type", bg=tabBG)
-viewsTypeFrame.grid(column="0", row = "0", sticky=NW, padx=5, pady=5)
-
-viewsFileFrame = tk.LabelFrame(viewsOptionsFrame, text="File Type", bg=tabBG)
-viewsFileFrame.grid(column="1", row = "0", sticky=NW, padx=5, pady=5)
-
-viewsSDFrame = tk.LabelFrame(viewsOptionsFrame, text="SD Downconversion", bg=tabBG)
-viewsSDFrame.grid(column="3", row = "0", sticky=NW, padx=5, pady=5)
-
-
 viewsCustomizedStatus = BooleanVar()
 viewsGenericStatus = BooleanVar()
 viewsWiredriveStatus = BooleanVar()
+viewsAvidStatus = BooleanVar()
+viewsAvidCaptionsStatus = BooleanVar()
 
 viewsGenericURLStatus = BooleanVar()
 viewsGenericTFNStatus = BooleanVar()
 viewsGenericPomoStatus = BooleanVar()
-
 viewsGenericSDStatus = BooleanVar()
-
 viewsSDStatus = BooleanVar()
 
 
 
+# Options Panel
+
+viewsOptionsFrame = tk.LabelFrame(tab_views, text="Options", bg=tabBG)
+viewsOptionsFrame.grid(column="0", row = "1", sticky=N, padx=20, pady=10)
+
+
+#Options Column Layouts
+
+viewsOptionsColumn1 = Frame(viewsOptionsFrame, width=ColumnWidth, height=ColumnHeight, highlightbackground="red", highlightthickness=0, bg=tabBG)
+viewsOptionsColumn1.grid(column="0", row = "0", sticky=NW, padx=10, pady=10)
+
+viewsOptionsColumn2 = Frame(viewsOptionsFrame, width=ColumnWidth, height=ColumnHeight, highlightbackground="red", highlightthickness=0, bg=tabBG)
+viewsOptionsColumn2.grid(column="1", row = "0", sticky=NW, padx=10, pady=10)
+
+viewsOptionsButtonContainer = Frame(viewsOptionsFrame, width=ColumnWidth, height=ColumnHeight, highlightbackground="red", highlightthickness=0, bg=tabBG)
+viewsOptionsButtonContainer.grid(column="0", row = "2", sticky=N, padx=0, pady=5, columnspan=2)
+
+
+viewOptionsDisclaimerContainer = Frame(viewsOptionsFrame, width=ColumnWidth, height=ColumnHeight, highlightbackground="red", highlightthickness=0, bg=tabBG)
+viewOptionsDisclaimerContainer.grid(column="0", row = "3", sticky=NW, padx=10, pady=15, columnspan=2)
+
+# Options > View Type
+viewsTypeFrame = tk.LabelFrame(viewsOptionsColumn1, text="View Types", bg=tabBG)
+viewsTypeFrame.grid(column="0", row = "0", sticky=NW, padx=0, pady=0)
+
+
+
+# Options > View Type > Customized Views
 viewsCustomizedCheck = Checkbutton(viewsTypeFrame, text="Customized View(s)", variable=viewsCustomizedStatus, bg=tabBG)
+viewsCustomizedCheck.grid(row=0, column=0, sticky=W, padx=5, pady=2)
+
+
+
+# Options > View Type > Generic View
 viewsGenericCheck = Checkbutton(viewsTypeFrame, text="Generic View", variable=viewsGenericStatus, bg=tabBG)
+viewsGenericCheck.grid(row=1, column=0, sticky=W, padx=5, pady=1)
+
 
 viewsGenericURLCheck = Checkbutton(viewsTypeFrame, text="Include URL", variable=viewsGenericURLStatus, bg=tabBG)
-viewsGenericTFNCheck = Checkbutton(viewsTypeFrame, text="Include TFN", variable=viewsGenericTFNStatus, bg=tabBG)
-viewsGenericPromoCheck = Checkbutton(viewsTypeFrame, text="Include Promo", variable=viewsGenericPomoStatus, bg=tabBG)
-
-viewsWiredriveCheck = Checkbutton(viewsTypeFrame, text="Wiredrive *", variable=viewsWiredriveStatus, bg=tabBG)
-
-viewsMOVRadio = Radiobutton(viewsFileFrame, text="MOV", variable=viewsType, value="MOV", bg=tabBG)
-viewsWMVRadio = Radiobutton(viewsFileFrame, text="WMV", variable=viewsType, value="WMV", bg=tabBG)
-viewsMP4Radio = Radiobutton(viewsFileFrame, text="MP4", variable=viewsType, value="MP4", bg=tabBG)
-
-viewsSDCheck = Checkbutton(viewsSDFrame, text="SD Views *", variable=viewsSDStatus, bg=tabBG)
-viewsCCRadio = Radiobutton(viewsSDFrame, text="Centercut", variable=SDType, value="CC", bg=tabBG)
-viewsLBRadio = Radiobutton(viewsSDFrame, text="Letterbox", variable=SDType, value="LB", bg=tabBG)
-
-
-viewsCustomizedCheck.select()
-viewsGenericCheck.select()
-viewsWiredriveCheck.select()
-viewsMOVRadio.select()
-viewsCCRadio.select()
-viewsSDCheck.deselect()
-viewsGenericURLCheck.select()
-
-
-
-viewsCustomizedCheck.grid(row=0, column=0, sticky=W, padx=5)
-viewsGenericCheck.grid(row=1, column=0, sticky=W, padx=5)
-
 viewsGenericURLCheck.grid(row=2, column=0, sticky=W, padx=25)
+
+viewsGenericTFNCheck = Checkbutton(viewsTypeFrame, text="Include TFN", variable=viewsGenericTFNStatus, bg=tabBG)
 viewsGenericTFNCheck.grid(row=3, column=0, sticky=W, padx=25)
+
+viewsGenericPromoCheck = Checkbutton(viewsTypeFrame, text="Include Promo", variable=viewsGenericPomoStatus, bg=tabBG)
 viewsGenericPromoCheck.grid(row=4, column=0, sticky=W, padx=25)
 
-viewsWiredriveCheck.grid(row=5, column=0, sticky=W, padx=5)
+# Options > View Type > WireDrive
+viewsWiredriveCheck = Checkbutton(viewsTypeFrame, text="Wiredrive *", variable=viewsWiredriveStatus, bg=tabBG)
+viewsWiredriveCheck.grid(row=5, column=0, sticky=W, padx=5, pady=2)
 
+
+
+
+
+# Options > File Type
+viewsFileFrame = tk.LabelFrame(viewsOptionsColumn2, text="File Type", bg=tabBG)
+viewsFileFrame.grid(column="0", row = "0", sticky=NW, padx=5, pady=5)
+
+viewsMOVRadio = Radiobutton(viewsFileFrame, text="MOV", variable=viewsType, value="MOV", bg=tabBG)
 viewsMOVRadio.grid(row=0, column=1, sticky=W, padx=5)
+
+viewsWMVRadio = Radiobutton(viewsFileFrame, text="WMV", variable=viewsType, value="WMV", bg=tabBG)
 viewsWMVRadio.grid(row=1, column=1, sticky=W, padx=5)
+
+viewsMP4Radio = Radiobutton(viewsFileFrame, text="MP4", variable=viewsType, value="MP4", bg=tabBG)
 viewsMP4Radio.grid(row=2, column=1, sticky=W, padx=5)
 
+
+# Options > Avid QC Views
+viewsAvidViewsFrame = tk.LabelFrame(viewsOptionsColumn2, text="QC Views", bg=tabBG)
+viewsAvidViewsFrame.grid(column="0", row = "1", sticky=NW, padx=5, pady=5, columnspan=2)
+
+
+# Options > Avid QC Views > Avid Import
+viewsAvidCheck = Checkbutton(viewsAvidViewsFrame, text="Vantage QC File **", variable=viewsAvidStatus, bg=tabBG)
+viewsAvidCheck.grid(row=6, column=0, sticky=W, padx=5)
+
+viewsAvidCaptionsCheck = Checkbutton(viewsAvidViewsFrame, text="Include Captions", variable=viewsAvidCaptionsStatus, bg=tabBG)
+viewsAvidCaptionsCheck.grid(row=7, column=0, sticky=W, padx=25)
+
+
+
+# Options > SD Downconversion
+viewsSDFrame = tk.LabelFrame(viewsOptionsColumn2, text="SD Downconversion", bg=tabBG)
+viewsSDFrame.grid(column="1", row = "0", sticky=NW, padx=5, pady=5)
+
+viewsSDCheck = Checkbutton(viewsSDFrame, text="SD Views *", variable=viewsSDStatus, bg=tabBG)
 viewsSDCheck.grid(row=0, column=1, sticky=W, padx=10)
+
+
+viewsCCRadio = Radiobutton(viewsSDFrame, text="Centercut", variable=SDType, value="CC", bg=tabBG)
 viewsCCRadio.grid(row=1, column=1, sticky=W, padx=30)
+
+viewsLBRadio = Radiobutton(viewsSDFrame, text="Letterbox", variable=SDType, value="LB", bg=tabBG)
 viewsLBRadio.grid(row=2, column=1, sticky=W, padx=30)
 
-viewsExport = tk.Button(viewsOptionsFrame, text="Export Views CSV", command=generateViewsCSV, state = NORMAL)
 
-viewsWiredriveDisclaimerLabel = tk.Label(viewsOptionsFrame, text="* Wiredrive views will always be HD MP4.", bg=tabBG)
 
-viewsExport.grid(row="10", column="0", padx="5", pady="15", columnspan="4")
-viewsWiredriveDisclaimerLabel.grid(row="11", column="0", padx="5", pady="15", columnspan="4", sticky="w")
+# Options > Export Views Button
+viewsExport = tk.Button(viewsOptionsButtonContainer, text="Export Views CSV", command=generateViewsCSV, state = NORMAL, bg=buttonHighlight, fg=buttonHighlightText)
+viewsExport.grid(row="1", column="1", padx="5", pady="0", sticky=NE)
+
+viewsResetOptions = tk.Button(viewsOptionsButtonContainer, text="Reset Options", command=resetViewsOptions, state = NORMAL, bg=buttonColor, fg=buttonText )
+viewsResetOptions.grid(row="1", column="0", padx="5", pady="0", sticky=NE)
+
+
+# Options > Disclaimers
+viewsWiredriveDisclaimerLabel = tk.Label(viewOptionsDisclaimerContainer, text="* Wiredrive views will always be HD MP4.", bg=tabBG)
+viewsWiredriveDisclaimerLabel.grid(row="0", column="0", padx="0", pady="0", columnspan="4", sticky="w")
+
+viewsWiredriveDisclaimerLabel = tk.Label(viewOptionsDisclaimerContainer, text="** Full resolution file.  Can be imported into the Avid for Longform QC.", bg=tabBG)
+viewsWiredriveDisclaimerLabel.grid(row="1", column="0", padx="0", pady="0", columnspan="4", sticky="w")
+
+#Options - Sets Options Defaults
+resetViewsOptions()
+
+
+
 
 
 #View MetaData Frame
@@ -1173,11 +1338,11 @@ viewsPromoEntry4.grid(row="4", column="9", padx="2")
 viewsButtons = tk.Frame(viewsMetaFrame, bg=tabBG)
 viewsButtons.grid(column="0", row = "10", pady="15", sticky=S)
 
-viewsCSV = tk.Button(viewsButtons, text="Parse Comcast CSV", command=lambda: openViewsCSV())
+viewsCSV = tk.Button(viewsButtons, text="Import Metadata", command=lambda: openViewsCSV())
 viewsClear = tk.Button(viewsButtons, text="Clear All", command=clearViewsCSV)
 
-viewsCSV.grid(row="0", column="1", padx="5")
-viewsClear.grid(row="0", column="3", padx="5")
+viewsCSV.grid(row="0", column="3", padx="5")
+viewsClear.grid(row="0", column="1", padx="5")
 
 
 
