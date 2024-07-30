@@ -859,7 +859,15 @@ def saveViewsCSV(viewsData):
 		messagebox.showinfo("Success!", "Your Views CSV files have been saved.")
 
 
+
+
+
+
+
+
+######################################################################################################################################################################################
 # ----------------- GUI -----------------
+######################################################################################################################################################################################
 
 def buttonStates():
 	t_btn2['state'] = tk.DISABLED
@@ -968,11 +976,11 @@ mainFrame.pack(padx=5, pady=5)
 
 tab_edl = Frame(mainFrame, width=1800, height=900, bg=tabBG)
 tab_edl.pack(fill="both", expand=1)
-mainFrame.add(tab_edl, text="EDL")
+mainFrame.add(tab_edl, text="Avid Tools")
 
-#tab_qc = Frame(mainFrame, width=1800, height=900, bg=tabBG)
-#tab_qc.pack(fill="both", expand=1)
-#mainFrame.add(tab_qc, text="QC")
+tab_premiere = Frame(mainFrame, width=1800, height=900, bg=tabBG)
+tab_premiere.pack(fill="both", expand=1)
+mainFrame.add(tab_premiere, text="Premiere Tools")
 
 tab_views = Frame(mainFrame, width=1800, height=900, bg=tabBG)
 tab_views.pack(fill="both", expand=1)
@@ -987,7 +995,7 @@ mainFrame.add(tab_views, text="Views")
 
 
 
-#GUI ----------------- EDL PARCER -----------------
+#GUI ----------------- AVID EDL PARCER -----------------
 
 #EDL Columns
 
@@ -1010,9 +1018,6 @@ t_btn3.grid(row="0", column="3", padx="5")
 
 
 
-
-
-
 #EDL Frame
 edlFrame = tk.LabelFrame(edlColumn1, text="Avid EDL (*.edl)", bg=tabBG)
 edlFrame.grid(column="0", row = "1", sticky=N, padx=5, pady=5)
@@ -1030,12 +1035,6 @@ edlTxt = tk.Text(edlFrame, selectbackground="#ff9933", selectforeground="black",
 edlTxt.pack(fill="both",expand=1, padx="5", pady="5")
 edlScroll_y.config(command=edlTxt.yview)
 edlScroll_x.config(command=edlTxt.xview)
-
-
-
-
-
-
 
 
 
@@ -1083,11 +1082,6 @@ csvTxt = tk.Text(csvFrame, selectbackground="#ff9933", selectforeground="black",
 csvTxt.pack(fill="both",expand=1, padx="5", pady="5")
 csvScroll_y.config(command=csvTxt.yview)
 csvScroll_x.config(command=csvTxt.xview)
-#------------------------------
-
-
-## bottomRow = tk.Frame(mainFrame, bg=background_color)
-## bottomRow.pack(pady="10")
 
 
 
@@ -1097,9 +1091,35 @@ csvScroll_x.config(command=csvTxt.xview)
 
 
 
-#GUI ----------------- FILES CHECKER - QC -----------------
+
+#GUI ----------------- PREMIERE TOOLS -----------------
 
 # Define Variables
+
+# Premiere - CSV Frame
+premiereCSVFrame = tk.LabelFrame(tab_premiere, text="NewBlue Title Variables (*.csv)", bg=tabBG)
+premiereCSVFrame.grid(column=0, row = 0, sticky=NE, padx=20, pady=20)
+
+premiereTitlesFrame = tk.LabelFrame(premiereCSVFrame, text="Titles List", bg=tabBG)
+premiereTitlesFrame.pack(padx="5", pady="5", fill="x")
+
+premiereTitlesList = tk.Label(premiereTitlesFrame, text="", justify="left", bg=tabBG, height=6, anchor=NW)
+premiereTitlesList.pack(pady="5", side="left", fill=X)
+
+# Premiere - CSV Buttons
+premiereButtonFrame = tk.Frame(premiereCSVFrame, bg=tabBG)
+premiereButtonFrame.pack(pady=10)
+
+premiere_directory_btn = tk.Button(premiereButtonFrame, text="Open Directory", command=lambda: open_file(None), bg=buttonColor, fg=buttonText)
+premiere_directory_btn.grid(column=0, row=0, padx="5")
+
+premiere_refresh_btn = tk.Button(premiereButtonFrame, text="Refresh", command=lambda: open_file(None), bg=buttonColor, fg=buttonText)
+premiere_refresh_btn.grid(column=1, row=0, padx="5")
+
+premiere_save_csv_btn = tk.Button(premiereButtonFrame, text="Save CSV", command=lambda: open_file(None), bg=buttonHighlight, fg=buttonHighlightText)
+premiere_save_csv_btn.grid(column=2, row=0, padx="5")
+
+
 
 
 
