@@ -17,21 +17,21 @@ TKinter - GUI
 Since this program is used on different computers by different users, I chose to create an EXE file to remove any Python dependencies and make it easier for the end user.  The drawback is that it is harder to update, since you need to recompile the EXE for distribution.  However, keeping the program self contained makes it easier to work right out of the box without having to install dependencies.
 
 - **Compiler:**  pyinstaller
- - pip install pyinstaller
+    - pip install pyinstaller
 
  **Steps:**
 - Downoad the project from GitHub
 - From the terminal, move to the directory downloaded project
 - Type in the following command:  pyinstaller --onefile --icon=edlicon.ico --clean -w EditorToolkit.py
- - Note:  edlicon.ico needs to be in the same directory as the .py file
+    - Note:  edlicon.ico needs to be in the same directory as the .py file
 - Once complete, .exe is located in \dist
 - Move the .exe file along with the sources directory wherever you need it.  It should look like the following:
- - EditorToolkit.exe
- - sources (directory)
-  - edl_icon.png
-  - edlicon.ico
-  - pw.ico
-  - pw_icon.png
+    - EditorToolkit.exe
+    - sources (directory)
+        - edl_icon.png
+        - edlicon.ico
+        - pw.ico
+        - pw_icon.png
 
 
 
