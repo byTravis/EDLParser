@@ -12,8 +12,8 @@ import csv
 #credits info
 creditsTitle = "Editor Toolkit - Production West"
 creditsAuthor = "Travis"
-creditsVersion ="v3.9"
-creditsDate="1/2/2024"
+creditsVersion ="v4"
+creditsDate="7/31/2024"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "https://rainforgrowth.sharepoint.com/sites/pw/Duplication%20Editors%20Handbook/Editor%20Toolkit.aspx"
 
