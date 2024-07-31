@@ -2,6 +2,7 @@
 /dist/
 /build/
 /__pycache__/
+/CCGPPI60H/
 *.cml
 *.csv
 *.edl

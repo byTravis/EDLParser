@@ -12,8 +12,8 @@ import csv
 #credits info
 creditsTitle = "Editor Toolkit - Production West"
 creditsAuthor = "Travis"
-creditsVersion ="v3.9"
-creditsDate="1/2/2024"
+creditsVersion ="v4"
+creditsDate="7/31/2024"
 creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "https://rainforgrowth.sharepoint.com/sites/pw/Duplication%20Editors%20Handbook/Editor%20Toolkit.aspx"
 
@@ -39,6 +39,8 @@ viewsMP4_SD = ['00:00:05;00', '00:00:02;00', '00:00:02;00', 'MP4', '00:59:53;00'
 #Global Variables
 cur_dir = os.getcwd()
 cmlItems=[]
+nbtitles=[]
+premiere_project_name = ""
 
 file_name=False
 dropFrame=False
@@ -492,8 +494,75 @@ def aboutPopup():
 
 
 
-# ----------------- FILE CHECKER/QC FUNCTIONS -----------------
+# ----------------- PREMIERE TOOLS FUNCTIONS -----------------
+def open_dir(x):  #opens and updates the current directory
+	global cur_dir
+	project=""
+	cur_dir = filedialog.askdirectory(initialdir=cur_dir)
+	cur_dir = os.path.normpath(cur_dir)
 
+	get_nbtitles(cur_dir)
+		
+
+
+def get_nbtitles(cur_dir):  #updates the global variable of nb titles
+	global nbtitles
+	nbtitles = []
+	global premiere_project_name
+	premiere_project_name = ""
+
+	for file in os.listdir(cur_dir):
+		if file.endswith(".xml"):
+			premiere_project_name=file.split(".")[0]
+			for file in os.listdir(cur_dir):
+				if file.endswith(".nbtitle"):
+					nbtitles.append(file)
+
+
+	premiere_update_project_info(cur_dir, premiere_project_name)
+	premiere_list_nbtitles()
+
+
+
+def premiere_update_project_info(cur_dir, premiere_project_name):  # updates the project info panel
+	if premiere_project_name !="":
+		text =f"Current Directory:  {cur_dir}\nProject: {premiere_project_name}"
+		premiere_save_csv_btn['state'] = tk.NORMAL
+	else:
+		text =f"Current Directory:  {cur_dir}\nProject:  NONE"
+		premiere_save_csv_btn['state'] = tk.DISABLED
+	
+	premiere_project_info.config(text=text)
+	
+
+
+def premiere_list_nbtitles():  # updates the nb title list in the panel
+	global nbtitles	
+	titleList="\n".join(nbtitles)
+	premiereTitlesList.config(text=titleList)
+	
+	  
+
+def premiere_refresh(x):  # refreshes all data in the current directory
+	global cur_dir
+	get_nbtitles(cur_dir)
+
+def premiere_save_csv(x):  # saves the csv for the project
+	global nbtitles
+	global cur_dir
+	global premiere_project_name 
+	
+	csv_filename = f"{cur_dir}\\{premiere_project_name}.csv"
+
+	with open(csv_filename, 'w', newline='') as csv_file:
+		csv_writer = csv.writer(csv_file)
+        # csv_writer.writerow
+
+		for title in nbtitles:
+			row1 = [title, 'TFN', 'URL', 'PROMO']
+			row2 = [title, '{$$Workflow_TFN}', '{$$Workflow_URL}', '{$$Workflow_Promo}']
+			csv_writer.writerow(row1)
+			csv_writer.writerow(row2)
 
 
 # ----------------- VIEWS GENERATOR FUNCTIONS -----------------
@@ -703,7 +772,8 @@ def getViewsMeta(viewsBase, viewsCustomized):  #sets views base Info
  			return(viewsBase, viewsCustomized)
 
 
-		if viewsISCIEntry3.get() !="":	   #checks to see if there is customization data in row 3
+		#checks to see if there is customization data in row 3
+		if viewsISCIEntry3.get() !="":
 			r=[]
 			r.append(viewsISCIEntry3.get())
 			r.append(viewsTFNEntry3.get())
@@ -859,7 +929,15 @@ def saveViewsCSV(viewsData):
 		messagebox.showinfo("Success!", "Your Views CSV files have been saved.")
 
 
+
+
+
+
+
+
+######################################################################################################################################################################################
 # ----------------- GUI -----------------
+######################################################################################################################################################################################
 
 def buttonStates():
 	t_btn2['state'] = tk.DISABLED
@@ -968,11 +1046,11 @@ mainFrame.pack(padx=5, pady=5)
 
 tab_edl = Frame(mainFrame, width=1800, height=900, bg=tabBG)
 tab_edl.pack(fill="both", expand=1)
-mainFrame.add(tab_edl, text="EDL")
+mainFrame.add(tab_edl, text="Avid Tools")
 
-#tab_qc = Frame(mainFrame, width=1800, height=900, bg=tabBG)
-#tab_qc.pack(fill="both", expand=1)
-#mainFrame.add(tab_qc, text="QC")
+tab_premiere = Frame(mainFrame, width=1800, height=900, bg=tabBG)
+tab_premiere.pack(fill="both", expand=1)
+mainFrame.add(tab_premiere, text="Premiere Tools")
 
 tab_views = Frame(mainFrame, width=1800, height=900, bg=tabBG)
 tab_views.pack(fill="both", expand=1)
@@ -987,7 +1065,7 @@ mainFrame.add(tab_views, text="Views")
 
 
 
-#GUI ----------------- EDL PARCER -----------------
+#GUI ----------------- AVID EDL PARCER -----------------
 
 #EDL Columns
 
@@ -1010,9 +1088,6 @@ t_btn3.grid(row="0", column="3", padx="5")
 
 
 
-
-
-
 #EDL Frame
 edlFrame = tk.LabelFrame(edlColumn1, text="Avid EDL (*.edl)", bg=tabBG)
 edlFrame.grid(column="0", row = "1", sticky=N, padx=5, pady=5)
@@ -1030,12 +1105,6 @@ edlTxt = tk.Text(edlFrame, selectbackground="#ff9933", selectforeground="black",
 edlTxt.pack(fill="both",expand=1, padx="5", pady="5")
 edlScroll_y.config(command=edlTxt.yview)
 edlScroll_x.config(command=edlTxt.xview)
-
-
-
-
-
-
 
 
 
@@ -1083,11 +1152,6 @@ csvTxt = tk.Text(csvFrame, selectbackground="#ff9933", selectforeground="black",
 csvTxt.pack(fill="both",expand=1, padx="5", pady="5")
 csvScroll_y.config(command=csvTxt.yview)
 csvScroll_x.config(command=csvTxt.xview)
-#------------------------------
-
-
-## bottomRow = tk.Frame(mainFrame, bg=background_color)
-## bottomRow.pack(pady="10")
 
 
 
@@ -1097,9 +1161,50 @@ csvScroll_x.config(command=csvTxt.xview)
 
 
 
-#GUI ----------------- FILES CHECKER - QC -----------------
+
+#GUI ----------------- PREMIERE TOOLS -----------------
 
 # Define Variables
+premiere_project_info_text = f"Current Directory:  {cur_dir}\nProject:  NONE"
+
+
+
+#Premiere - Project Info
+
+premiere_project_info_frame = tk.LabelFrame(tab_premiere, text="Project Information", bg=tabBG)
+premiere_project_info_frame.grid(column=0, row = 0, sticky=NW, padx=20, pady=20)
+
+premiere_project_info = tk.Label(premiere_project_info_frame, text=premiere_project_info_text, justify="left", bg=tabBG, anchor=NW)
+premiere_project_info.grid(column=0, row=0, sticky=NW, padx=5)
+
+
+
+
+
+# Premiere - CSV Frame
+premiereCSVFrame = tk.LabelFrame(tab_premiere, text="NewBlue Title Variables (*.csv)", bg=tabBG)
+premiereCSVFrame.grid(column=0, row = 5, sticky=NW, padx=20, pady=5)
+
+premiereTitlesFrame = tk.LabelFrame(premiereCSVFrame, text="Titles List", bg=tabBG)
+premiereTitlesFrame.pack(padx="5", pady="5", fill=X)
+
+premiereTitlesList = tk.Label(premiereTitlesFrame, text="", justify="left", bg=tabBG, height=6, anchor=NW)
+premiereTitlesList.pack(pady="5", side="left", fill=X)
+
+# Premiere - CSV Buttons
+premiereButtonFrame = tk.Frame(premiereCSVFrame, bg=tabBG)
+premiereButtonFrame.pack(pady=10)
+
+premiere_directory_btn = tk.Button(premiereButtonFrame, text="Open Directory", command=lambda: open_dir(None), bg=buttonColor, fg=buttonText)
+premiere_directory_btn.grid(column=0, row=0, padx="5")
+
+premiere_refresh_btn = tk.Button(premiereButtonFrame, text="Refresh", command=lambda: premiere_refresh(None), bg=buttonColor, fg=buttonText)
+premiere_refresh_btn.grid(column=1, row=0, padx="5")
+
+premiere_save_csv_btn = tk.Button(premiereButtonFrame, text="Save CSV", command=lambda: premiere_save_csv(None), bg=buttonHighlight, fg=buttonHighlightText, state=DISABLED)
+premiere_save_csv_btn.grid(column=2, row=0, padx="5")
+
+
 
 
 
