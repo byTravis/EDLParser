@@ -1,4 +1,4 @@
-# Editor Toolkit
+# Editor Toolkit & EDL Parser
 
 ## Description
 This program is designed to bridge Avid Composer and Adobe Premiere video editors with Telestream Vantage video processor and transcoder. It also includes additional tools, such as workorder creation for use with Telestream Vantage. This was designed for a specific workflow unique to our work.
@@ -10,7 +10,7 @@ This program is designed to bridge Avid Composer and Adobe Premiere video editor
 **Views** - "Views" are low-resolution files used for review or viewing, not intended for distribution. This tab allows us to generate view workorders to be used with Vantage. It provides various output options depending on our specific needs.
 
 ## Libraries
-TKinter - GUI
+- **TKinter** - GUI
 
 
 ## Building an EXE file
@@ -38,5 +38,5 @@ Since this program is used on different computers by different users, I chose to
 
 
 ## Updates:
-**v4 - 7/31/2024** - Added a Premiere tab that creates a CSV for all NB Titles
-**v3.1 - 02/01/2022** - Added functionality to Views Tab.  Parses and creates CSV for views.  Set button states.
+- **v4 - 7/31/2024** - Added a Premiere tab that creates a CSV for all NB Titles
+- **v3.1 - 02/01/2022** - Added functionality to Views Tab.  Parses and creates CSV for views.  Set button states.

@@ -542,10 +542,10 @@ def premiere_list_nbtitles():  # updates the nb title list in the panel
 	premiereTitlesList.config(text=titleList)
 	
 	  
-
 def premiere_refresh(x):  # refreshes all data in the current directory
 	global cur_dir
 	get_nbtitles(cur_dir)
+
 
 def premiere_save_csv(x):  # saves the csv for the project
 	global nbtitles
