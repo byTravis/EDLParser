@@ -25,7 +25,7 @@ screen_height = root.winfo_screenheight()
 center_x = int(screen_width/2 - window_width/2)
 center_y = int(screen_height/2 - window_height/2)
 
-# root.iconbitmap("images/icon.ico")
+root.iconbitmap("sources\edlicon.ico")
 root.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
 
 
@@ -198,7 +198,7 @@ edl_title_container.grid(column=0, row=0, padx=10, pady=(10, 0), sticky="nsew")
 # # EDL PARCER - Avid
 
 # Containers
-avid_edl_container = ctk.CTkFrame(edl_tab, height=200, border_width=1, fg_color="white")
+avid_edl_container = ctk.CTkFrame(edl_tab, height=200, border_width=1, fg_color="white", corner_radius=10)
 avid_edl_container.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
 
 avid_edl_qc_container = tk.LabelFrame(avid_edl_container, text=" QC ", height=200, width=200, bg="white")
@@ -233,7 +233,7 @@ refresh_qc_btn.grid(column=0, row=2,pady=(60,5))
 
 # Containers
 
-premiere_edl_container = ctk.CTkFrame(edl_tab, height=200, border_width=1, fg_color="white")
+premiere_edl_container = ctk.CTkFrame(edl_tab, height=200, border_width=1, corner_radius=10, fg_color="white")
 premiere_edl_container.grid(column=1, row=1, padx=10, pady=10, sticky="nsew")
 
 premiere_edl_qc_container = tk.LabelFrame(premiere_edl_container, text=" QC ", height=200, width=200, bg="white")
