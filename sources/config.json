@@ -1,0 +1,4 @@
+{
+	"media_source_code": "<Source identifier=\"{source_number}\">\n\t<File location=\"{{$$Workflow_SupportingFilesPath}}\\{media_file}\" />\n</Source>\n\n"
+  }
+  
