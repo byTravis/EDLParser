@@ -39,13 +39,13 @@ creditsProjectSource="https://github.com/byTravis/EDLParser/"
 creditsDocumentation = "https://rainforgrowth.sharepoint.com/sites/pw/Duplication%20Editors%20Handbook/Editor%20Toolkit.aspx"
 
 # AVID Variables
-isci = 'TEST24PH'
+isci = ''
 current_directory = 'reference\\'
-edl_path = f'{current_directory}{isci}.edl'
+edl_path = f'{current_directory}{isci}.edl'  # do we need this?  use ISCI instead to look for xml and edl.
 drop_frame = None
 edit_hour_mark = ""  # variable set in detect_dropframe
 dissolve_offset = ""  # variable set in detect_dropframe function.  this compensates for the fade in Vantage.  Vantage treats a fade where first frame is 0% opacity and the last frame is 100% opacity.  Avid treats the first & last frame as showing some of the video.  This cheats that look so first or last frame isn't blank.
-framerate = 23.976  # Plugged into the cml_edit_code.
+framerate = ""  # Plugged into the cml_edit_code.
 video_edits = []
 audio_edits = []
 media_files = []
@@ -58,7 +58,8 @@ media_files = []
 # Functions
 #################################################
 
-################# EDL TAB FUNCTIONS #################
+
+################# General FUNCTIONS #################
 
 def placeholder_function():
 	pass
@@ -79,19 +80,23 @@ def open_folder(button):
     folder = filedialog.askdirectory(initialdir=current_directory)
 	
     if folder:
-        print(f"{button} button | Selected folder: {folder}")
-        current_directory = folder
-        current_directory_path.configure(text=folder)
-        edl_button_states(button)
+        current_directory = folder  # sets current directory based on what folder was chosen
+        if button == "avid" or button == "premiere":
+            project = get_project(current_directory)  # finds ISCI based on the selected directory
+            edl_button_states(button)  # sets button states on EDL tab        
+            update_edl_project_info(project, current_directory)
+        else:
+             print("not avid or premiere")
+
     else:
         print("No folder selected")
 	
 
 
 
+################# EDL TAB FUNCTIONS #################
 
 def edl_button_states(button):  
-
     global avid_generate_btn_state
     global avid_refresh_qc_btn_state
     global premiere_generate_btn_state
@@ -100,34 +105,213 @@ def edl_button_states(button):
     global enabled_btn
     global disabled_btn
 
-
-    if button == "avid":           
-        avid_generate_btn.configure(**enabled_btn)
+    if button == "framerate":           
+        avid_open_dir_btn.configure(**enabled_btn)
+    elif button == "avid":           
+        # avid_generate_btn.configure(**enabled_btn)
         avid_refresh_qc_btn.configure(**enabled_btn)
         premiere_generate_btn.configure(**disabled_btn)
         premiere_refresh_qc_btn.configure(**disabled_btn)
-
+        avid_qc(button)
+        
     elif button == "premiere":
-        avid_generate_btn_state = "disabled"
-        avid_refresh_qc_btn_state = "disabled"
-        premiere_generate_btn_state = "disabled"
-        premiere_refresh_qc_btn_state = "disabled"
+        premiere_open_dir_btn.configure(**enabled_btn)
+        avid_generate_btn.configure(**disabled_btn)
+        avid_refresh_qc_btn.configure(**disabled_btn)
+        premiere_generate_btn.configure(**enabled_btn)
+        premiere_refresh_qc_btn.configure(**enabled_btn)
+        avid_framerate_radio.set("")
+        premiere_qc(button)        
+
     else:
-        avid_open_dir_btn.configure(**enabled_btn)
+        avid_open_dir_btn.configure(**disabled_btn)
         premiere_open_dir_btn.configure(**enabled_btn)
         avid_generate_btn.configure(**disabled_btn)
         avid_refresh_qc_btn.configure(**disabled_btn)
         premiere_generate_btn.configure(**disabled_btn)
         premiere_refresh_qc_btn.configure(**disabled_btn)
-         
-
-    
 
 
+def update_edl_project_info(project, current_directory):  # Updates project info on the EDL tab, which includes ISCI and current directory
+    current_directory_path.configure(text=current_directory)
+    current_project_name.configure(text=project)
+     
+
+def get_project(current_directory):  # gets the ISCI from the directory path.  Used for finding filenames.
+     global isci
+     isci = current_directory.split("/")[-1]
+     return isci
+
+def edl_framerate(selected_framerate): # sets framerate for Avid EDLs
+    global framerate
+    framerate = selected_framerate
+    edl_button_states("framerate")     
+
+def avid_qc(button):
+    global isci
+    global current_directory
+    global enabled_btn
+    global disabled_btn
+
+    title_present = False
     
+    avid_edl_qc_text.configure(state="normal") # allows text to be written
+    premiere_edl_qc_text.configure(state="normal") # allows text to be written
+
+    avid_edl_qc_text.delete("1.0", "end")  # clears the Avid QC box
+    premiere_edl_qc_text.delete("1.0", "end")  # clears the Premiere QC box
+
+    avid_edl_qc_text.tag_configure("not_missing", foreground="green")   # styles the text in the text box so it's green for not missing elements
+    avid_edl_qc_text.tag_configure("missing", foreground="red")  # styles the text in the text box so it's red for missing elements
+    avid_edl_qc_text.tag_configure("title", foreground="blue")  # styles the text in the text box so it's red for missing elements
     
-def edl_framerate(framerate):
-    print(framerate)
+    # Checks for missing Files
+    if os.path.exists(f"{current_directory}\{isci}.edl"):  # Checks for EDL
+        avid_generate_btn.configure(**enabled_btn)
+        avid_edl_qc_text.insert("end", f"✅ {isci}.edl\n", "not_missing")
+    else:
+        avid_generate_btn.configure(**disabled_btn)
+        avid_edl_qc_text.insert("end", f"❌ {isci}.edl\n", "missing")
+
+    if os.path.exists(f"{current_directory}\{isci}.mov"):  # Checks for MOV
+        avid_edl_qc_text.insert("end", f"✅ {isci}.mov\n", "not_missing")
+    else:
+        avid_edl_qc_text.insert("end", f"❌ {isci}.mov\n", "missing")
+
+    if os.path.exists(f"{current_directory}\{isci}.scc"):  # Checks for SCC
+        avid_edl_qc_text.insert("end", f"✅ {isci}.scc\n", "not_missing")
+    else:
+        avid_edl_qc_text.insert("end", f"❌ {isci}.scc\n", "missing")
+
+    if os.path.exists(f"{current_directory}\{isci}.csv"):  # Checks for CSV (generated with the generate button)
+        avid_edl_qc_text.insert("end", f"✅ {isci}.csv\n", "not_missing")
+    else:
+        avid_edl_qc_text.insert("end", f"❌ {isci}.csv\n   (not generated)\n", "missing")
+
+    if os.path.exists(f"{current_directory}\{isci}.cml"):  # Checks for cml (generated with the generate button)
+        avid_edl_qc_text.insert("end", f"✅ {isci}.cml\n", "not_missing")
+    else:
+        avid_edl_qc_text.insert("end", f"❌ {isci}.cml\n   (not generated)\n", "missing")
+    
+    # list all of the NB titles in the directory
+    for file in os.listdir(current_directory): 
+        full_path = os.path.join(current_directory, file)
+
+        if os.path.isfile(full_path):
+            parts = file.rsplit(".", 1)
+
+            if len(parts) > 1:
+                name = parts[0]
+                ext = parts[1]
+
+                if ext == "nbtitle":
+                    avid_edl_qc_text.insert("end", f"☑️ {name}.{ext}\n", "title")
+                    title_present = True
+    
+    #  Checks for a VO folder
+    if os.path.exists(f"{current_directory}\\vo"):
+        avid_edl_qc_text.insert("end", f"📁 VO (folder)\n")
+    else:
+        avid_edl_qc_text.insert("end", f"\n🚫 No VO Present\n")
+
+    # Alert if titles are missing
+    if title_present == False:
+        avid_edl_qc_text.insert("end", f"\n⚠️ Missing Titles \n", "missing")
+    
+    # removes the ability to edit text
+    avid_edl_qc_text.configure(state=tk.DISABLED)
+    premiere_edl_qc_text.configure(state=tk.DISABLED)   
+        
+
+
+        
+
+        
+        
+
+        
+
+
+        
+
+     
+     
+
+      
+
+
+def premiere_qc(button):
+    global isci
+    global current_directory
+    global enabled_btn
+    global disabled_btn
+
+    title_present = False
+    
+    avid_edl_qc_text.configure(state="normal") # allows text to be written
+    premiere_edl_qc_text.configure(state="normal") # allows text to be written
+
+    avid_edl_qc_text.delete("1.0", "end")  # clears the Avid QC box
+    premiere_edl_qc_text.delete("1.0", "end")  # clears the Premiere QC box
+
+    premiere_edl_qc_text.tag_configure("not_missing", foreground="green")   # styles the text in the text box so it's green for not missing elements
+    premiere_edl_qc_text.tag_configure("missing", foreground="red")  # styles the text in the text box so it's red for missing elements
+    premiere_edl_qc_text.tag_configure("title", foreground="blue")  # styles the text in the text box so it's red for missing elements
+    
+    # Checks for missing Files
+    if os.path.exists(f"{current_directory}\{isci}.xml"):  # Checks for Premiere XML
+        premiere_edl_qc_text.insert("end", f"✅ {isci}.xml\n", "not_missing")
+    else:
+        premiere_edl_qc_text.insert("end", f"❌ {isci}.xml\n", "missing")
+
+    if os.path.exists(f"{current_directory}\{isci}.mov"):  # Checks for MOV
+        avid_edl_qc_text.insert("end", f"✅ {isci}.mov\n", "not_missing")
+    else:
+        premiere_edl_qc_text.insert("end", f"❌ {isci}.mov\n", "missing")
+
+    if os.path.exists(f"{current_directory}\{isci}.scc"):  # Checks for SCC
+        premiere_edl_qc_text.insert("end", f"✅ {isci}.scc\n", "not_missing")
+    else:
+        premiere_edl_qc_text.insert("end", f"❌ {isci}.scc\n", "missing")
+
+    if os.path.exists(f"{current_directory}\{isci}.csv"):  # Checks for CSV (generated with the generate button)
+        premiere_edl_qc_text.insert("end", f"✅ {isci}.csv\n", "not_missing")
+    else:
+        premiere_edl_qc_text.insert("end", f"❌ {isci}.csv\n   (not generated)\n", "missing")
+   
+    # list all of the NB titles in the directory
+    for file in os.listdir(current_directory):      
+
+        full_path = os.path.join(current_directory, file)
+
+        if os.path.isfile(full_path):
+            parts = file.rsplit(".", 1)
+
+            if len(parts) > 1:
+                name = parts[0]
+                ext = parts[1]
+
+                if ext == "nbtitle":
+                    title_present = True
+                    premiere_edl_qc_text.insert("end", f"☑️ {name}.{ext}\n", "title")
+    
+    #  Checks for a VO folder
+    if os.path.exists(f"{current_directory}\\vo"):
+        premiere_edl_qc_text.insert("end", f"📁 VO (folder)\n")
+    else:
+        premiere_edl_qc_text.insert("end", f"No VO Present\n")
+    
+    # Enables Generate button if titles are present
+    if title_present == True:
+        premiere_generate_btn.configure(**enabled_btn)
+    else:
+        premiere_generate_btn.configure(**disabled_btn)
+        premiere_edl_qc_text.insert("end", f"\n⚠️ Missing Titles\n", "missing")
+
+    
+    # removes the ability to edit text
+    avid_edl_qc_text.configure(state=tk.DISABLED)
+    premiere_edl_qc_text.configure(state=tk.DISABLED)    
 
 
 
@@ -158,6 +342,12 @@ ctk.set_appearance_mode("System")  # Modes: system (default), light, dark
 ctk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
  
 background_color = "#525252"
+tab_bg = "#e6e6ff"
+column_width="65"
+column_height="42"
+section_title = ("Helvetica", 18, "bold")
+current_directory_label = ("Helvetica", 13, "bold")
+current_directory_text = ("Helvetica", 13, "italic")
 
 enabled_btn = {
         "state" : "normal", 
@@ -173,36 +363,6 @@ disabled_btn = {
         "text_color_disabled" : "#838383"         
 }
 
-
-
-
-
-# button_color = ["#3a7ebf", "#1f538d"]
-# button_color_disabled = "light blue"
-
-# button_text = ("Helvetica", 12, "bold")
-# button_text_color = "white"
-# button_text_disabled = ("Helvetica", 12, "italic")
-# button_text_color_disabled = "#525252"
-
-# button_highlight = "#96d3e2"
-# button_highlight_text = "black"
-
-tab_bg = "#e6e6ff"
-column_width="65"
-column_height="42"
-
-section_title = ("Helvetica", 18, "bold")
-current_directory_label = ("Helvetica", 13, "bold")
-current_directory_text = ("Helvetica", 13, "italic")
-
-
-
-#GUI ----------------- BUTTON STATES -----------------
-avid_generate_btn_state = "disabled"
-avid_refresh_qc_btn_state = "disabled"
-premiere_generate_btn_state = "disabled"
-premiere_refresh_qc_btn_state = "disabled"
 
 
 
@@ -282,13 +442,7 @@ main_frame.add(directory_printer_tab, text="Directory Printer")
 
 
 
-#GUI ----------------- EDL PARCER -----------------
-
-# # EDL PARCER - Title/Root
-edl_title_container = ctk.CTkFrame(edl_tab, height=25, border_width=0, fg_color="transparent")
-edl_title_container.grid(column=0, row=0, padx=10, pady=(10, 0), sticky="nsew")
-
-
+#GUI ----------------- EDL PARSER -----------------
 # Current Directory Container
 current_directory_container = ctk.CTkFrame(edl_tab, border_width=1, fg_color="white", corner_radius=10)
 current_directory_container.grid(column=0, row=0, padx=10, pady=20, sticky="nsew", columnspan=2)
@@ -316,39 +470,46 @@ current_directory_path.grid(column=1, row=1, sticky="sw", padx=0, pady=0)
 # # EDL PARCER - Avid
 
 # Containers
-avid_edl_container = ctk.CTkFrame(edl_tab, height=200, border_width=1, fg_color="white", corner_radius=10)
+avid_edl_container = ctk.CTkFrame(edl_tab, border_width=1, fg_color="white", corner_radius=10)
 avid_edl_container.grid(column=0, row=1, padx=10, pady=0, sticky="nsew")
 
-avid_header_container = ctk.CTkFrame(avid_edl_container, height=200, border_width=0, fg_color="transparent")
+avid_header_container = ctk.CTkFrame(avid_edl_container, height=75, border_width=0, fg_color="transparent")
+avid_header_container.grid_propagate(False)
 avid_header_container.grid(column=0, row=0, columnspan = 2, padx=5, pady=5, sticky="nsew")
 
 
-avid_edl_qc_container = tk.LabelFrame(avid_edl_container, text=" QC ", height=200, width=200, bg="white")
+avid_edl_qc_container = tk.LabelFrame(avid_edl_container, text=" QC ", height=250, width=200, bg="white")
 avid_edl_qc_container.grid(column=0, row=2, padx=10, pady=10, sticky="nsew")
 
-avid_edl_btn_container = ctk.CTkFrame(avid_edl_container, height=200, border_width=0, fg_color="transparent")
+avid_edl_btn_container = ctk.CTkFrame(avid_edl_container, border_width=0, fg_color="transparent")
 avid_edl_btn_container.grid(column=1, row=2, padx=10, pady=10, sticky="nsew")
 
 avid_edl_description_container = ctk.CTkFrame(avid_header_container, border_width=0, fg_color="transparent")
-avid_edl_description_container.grid(column=1, row=0, padx=0, pady=0, sticky="nw")
+avid_edl_description_container.grid(column=0, row=0, padx=0, pady=0, sticky="nw")
 
-avid_edl_radio_container = ctk.CTkFrame(avid_header_container, width=500, border_width=0, corner_radius=0, fg_color="transparent")
-avid_edl_radio_container.grid(column=2, row=0, padx=(80,0), pady=0, sticky="se")
-
-
+avid_edl_radio_container = ctk.CTkFrame(avid_header_container, border_width=0, corner_radius=0, fg_color="transparent")
+avid_edl_radio_container.grid(column=1, row=0, padx=75, pady=0, sticky="se")
 
 
-# Radio Buttons
-avid_edl_radio_title = ctk.CTkLabel(avid_edl_radio_container, text="Framerate:", font=("Helvetica", 14, "bold"))
-avid_edl_radio_title.grid(column=0, row=0, sticky="w", padx=0, pady=(0, 0))
 
 
-# Avid Description
+
+# # Avid Description
 avid_section_title = ctk.CTkLabel(avid_edl_description_container, text="Avid", font=section_title)
-avid_section_title.grid(column=0, row=0, sticky="nw", padx=10, pady=(10, 0))
+avid_section_title.grid(column=0, row=0, sticky="nw", padx=10, pady=0)
 
 avid_description = ctk.CTkLabel(avid_edl_description_container, text="Creates:  CML, CSV", justify='left')
 avid_description.grid(column=0, row=1, sticky="nw", padx=20, pady=0)
+
+# Radio Buttons
+        # "fg_color" : ["#3a7ebf", "#1f538d"],
+avid_edl_radio_title = ctk.CTkLabel(avid_edl_radio_container, text="Choose framerate to begin:", text_color="#3a7ebf", font=("Helvetica", 11, "bold"))
+avid_edl_radio_title.grid(column=0, row=0, sticky="w", padx=0, pady=(0, 0))
+
+# Avid QC text
+avid_edl_qc_text = tk.Text(avid_edl_qc_container, width=25, height=15, border=0)
+avid_edl_qc_text.grid(column = 0, row = 0, sticky = "nsew", padx = 5, pady = 5)
+avid_edl_qc_text.config(state=tk.DISABLED)
 
 
 # Buttons
@@ -365,7 +526,7 @@ avid_framerate_2997 = ctk.CTkRadioButton(
      value="29.97", 
      command=lambda: edl_framerate(avid_framerate_radio.get())
      )
-avid_framerate_2997.grid(column=0, row=1,pady=0, padx=10, sticky="w")
+avid_framerate_2997.grid(column=0, row=1,pady=0, padx=20, sticky="w")
 
 
 avid_framerate_23976 = ctk.CTkRadioButton(
@@ -380,7 +541,7 @@ avid_framerate_23976 = ctk.CTkRadioButton(
      variable=avid_framerate_radio,
      command=lambda: edl_framerate(avid_framerate_radio.get())
      )
-avid_framerate_23976.grid(column=0, row=2, pady=0, padx=10, sticky="w")
+avid_framerate_23976.grid(column=0, row=2, pady=0, padx=20, sticky="w")
 
 
 avid_open_dir_btn = ctk.CTkButton(avid_edl_btn_container,  text="Open Folder", command=lambda: open_folder("avid"))
@@ -389,7 +550,7 @@ avid_open_dir_btn.grid(column=0, row=0,pady=5)
 avid_generate_btn = ctk.CTkButton(avid_edl_btn_container, text="Generate", command=placeholder_function)
 avid_generate_btn.grid(column=0, row=3,pady=5)
 
-avid_refresh_qc_btn = ctk.CTkButton(avid_edl_btn_container, text="Refresh QC", command=placeholder_function)
+avid_refresh_qc_btn = ctk.CTkButton(avid_edl_btn_container, text="Refresh QC", command=lambda: avid_qc("avid"))
 avid_refresh_qc_btn.grid(column=0, row=4,pady=(60,5))
 
 
@@ -399,23 +560,35 @@ avid_refresh_qc_btn.grid(column=0, row=4,pady=(60,5))
 
 # Containers
 
-premiere_edl_container = ctk.CTkFrame(edl_tab, height=200, border_width=1, corner_radius=10, fg_color="white")
+premiere_edl_container = ctk.CTkFrame(edl_tab, border_width=1, corner_radius=10, fg_color="white")
 premiere_edl_container.grid(column=1, row=1, padx=10, pady=0, sticky="nsew")
 
-premiere_edl_qc_container = tk.LabelFrame(premiere_edl_container, text=" QC ", height=200, width=200, bg="white")
-premiere_edl_qc_container.grid(column=0, row=2, padx=10, pady=(25,10),  sticky="nsew")
+premiere_header_container = ctk.CTkFrame(premiere_edl_container, border_width=0, height=75, fg_color="transparent")
+premiere_header_container.grid_propagate(False)
+premiere_header_container.grid(column=0, row=0, columnspan = 2, padx=5, pady=5, sticky="nsew")
 
-premiere_edl_btn_container = ctk.CTkFrame(premiere_edl_container, height=200, border_width=0, fg_color="transparent")
-premiere_edl_btn_container.grid(column=1, row=2, padx=10, pady=(25,10), sticky="nsew")
+premiere_edl_qc_container = tk.LabelFrame(premiere_edl_container, text=" QC ", height=250, width=200, bg="white")
+premiere_edl_qc_container.grid(column=0, row=2, padx=10, pady=10,  sticky="s")
+
+premiere_edl_btn_container = ctk.CTkFrame(premiere_edl_container, border_width=0, fg_color="transparent")
+premiere_edl_btn_container.grid(column=1, row=2, padx=10, pady=10, sticky="nsew")
+
+premiere_edl_description_container = ctk.CTkFrame(premiere_header_container, border_width=0, fg_color="transparent")
+premiere_edl_description_container.grid(column=0, row=0, padx=0, pady=0, sticky="nw")
 
 
-# Labels
-premiere_section_title = ctk.CTkLabel(premiere_edl_container, text="Premiere", font=section_title)
-premiere_section_title.grid(column=0, row=0, sticky="w", padx=10, pady=(10, 0))
 
-premiere_description = ctk.CTkLabel(premiere_edl_container, text="Creates:  CSV", justify='left')
+# # Labels
+premiere_section_title = ctk.CTkLabel(premiere_edl_description_container, text="Premiere", font=section_title)
+premiere_section_title.grid(column=0, row=0, sticky="w", padx=10, pady=0)
+
+premiere_description = ctk.CTkLabel(premiere_edl_description_container, text="Creates:  CSV", justify='left')
 premiere_description.grid(column=0, row=1, sticky="w", padx=20, pady=0)
 
+# Premiere QC text
+premiere_edl_qc_text = tk.Text(premiere_edl_qc_container, width=25, height=15, border=0)
+premiere_edl_qc_text.grid(column = 0, row = 0, sticky = "nsew", padx = 5, pady = 5)
+premiere_edl_qc_text.config(state=tk.DISABLED)
 
 # Buttons
 premiere_open_dir_btn = ctk.CTkButton(premiere_edl_btn_container, text="Open Folder", command=lambda: open_folder("premiere"))
@@ -424,7 +597,7 @@ premiere_open_dir_btn.grid(column=0, row=0,pady=5)
 premiere_generate_btn = ctk.CTkButton(premiere_edl_btn_container, text="Generate", command=placeholder_function)
 premiere_generate_btn.grid(column=0, row=1,pady=5)
 
-premiere_refresh_qc_btn = ctk.CTkButton(premiere_edl_btn_container, text="Refresh QC", command=placeholder_function)
+premiere_refresh_qc_btn = ctk.CTkButton(premiere_edl_btn_container, text="Refresh QC", command=lambda: premiere_qc("premiere"))
 premiere_refresh_qc_btn.grid(column=0, row=2,pady=(60,5))
 
 
